@@ -1,5 +1,3 @@
 Name: 'Opal'
 Language: 'C++|0'
-Version: '0.11.6'
-Interface: 'Module.cpp'
-Source: []
+Version: '0.12.0'

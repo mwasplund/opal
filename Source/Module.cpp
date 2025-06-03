@@ -1,6 +1,4 @@
-﻿#ifdef SOUP_BUILD
-module;
-#endif
+﻿module;
 
 #include <algorithm>
 #include <array>
@@ -41,9 +39,7 @@ module;
 #error Uknown Platform
 #endif
 
-#ifdef SOUP_BUILD
 export module Opal;
-#endif
 
 #define OPAL_IMPLEMENTATION
 
@@ -51,25 +47,18 @@ export module Opal;
 #include "Utilities/SemanticVersion.h"
 
 #include "IO/SystemConsoleManager.h"
-#ifdef SOUP_BUILD
 #include "IO/MockConsoleManager.h"
 #include "IO/ScopedConsoleManagerRegister.h"
-#endif
 
 #include "Logger/Log.h"
 #include "Logger/ConsoleTraceListener.h"
-#ifdef SOUP_BUILD
 #include "Logger/ScopedTraceListenerRegister.h"
 #include "Logger/TestTraceListener.h"
-#endif
 
-#ifdef SOUP_BUILD
 #include "Memory/IReferenceCounted.h"
 #include "Memory/Reference.h"
 #include "Memory/ReferenceCounted.h"
-#endif
 
-#ifdef SOUP_BUILD
 #include "System/MockFileSystem.h"
 #include "System/MockLibraryManager.h"
 #include "System/MockProcessManager.h"
@@ -78,7 +67,6 @@ export module Opal;
 #include "System/ScopedLibraryManagerRegister.h"
 #include "System/ScopedProcessManagerRegister.h"
 #include "System/ScopedSystemRegister.h"
-#endif
 #include "System/STLFileSystem.h"
 #include "System/STLSystem.h"
 
