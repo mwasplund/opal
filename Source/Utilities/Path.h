@@ -164,8 +164,15 @@ namespace Opal
 					directories.pop_back();
 				}
 
+				std::optional<std::string_view> root;
+				if (HasRoot())
+					root = GetRoot();
+
 				// Set the state of the result path
-				result.SetState(directories, GetRoot(), "");
+				result.SetState(
+					directories,
+					root,
+					std::nullopt);
 			}
 
 			return result;
