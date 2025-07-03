@@ -53,7 +53,7 @@ export module Opal;
 #include "logger/log.h"
 #include "logger/console-trace-listener.h"
 #include "logger/scoped-trace-listener-register.h"
-#include "logger/testT-trace-listener.h"
+#include "logger/test-trace-listener.h"
 
 #include "memory/i-reference-counted.h"
 #include "memory/reference.h"
@@ -65,13 +65,13 @@ export module Opal;
 #include "system/mock-system.h"
 #include "system/scoped-file-system-register.h"
 #include "system/scoped-library-manager-register.h"
-#include "system/scopedProcess-manager-register.h"
+#include "system/scoped-process-manager-register.h"
 #include "system/scoped-system-register.h"
 #include "system/stl-file-system.h"
 #include "system/stl-system.h"
 
 #if defined(_WIN32)
-#include "system/smart-jandle.h"
+#include "system/smart-handle.h"
 #include "system/windows-dynamic-library-manager.h"
 #include "system/windows-process-manager.h"
 #elif defined(__linux__)

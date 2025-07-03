@@ -1,9 +1,9 @@
-﻿// <copyright file="IProcessManager.h" company="Soup">
+﻿// <copyright file="i-process-manager.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "IProcess.h"
+#include "i-process.h"
 
 namespace Opal::System
 {
