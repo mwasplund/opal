@@ -43,37 +43,37 @@ export module Opal;
 
 #define OPAL_IMPLEMENTATION
 
-#include "Utilities/Path.h"
-#include "Utilities/SemanticVersion.h"
+#include "utilities/path.h"
+#include "utilities/semantic-version.h"
 
-#include "IO/SystemConsoleManager.h"
-#include "IO/MockConsoleManager.h"
-#include "IO/ScopedConsoleManagerRegister.h"
+#include "io/system-console-manager.h"
+#include "io/mock-console-manager.h"
+#include "io/scoped-console-manager-register.h"
 
-#include "Logger/Log.h"
-#include "Logger/ConsoleTraceListener.h"
-#include "Logger/ScopedTraceListenerRegister.h"
-#include "Logger/TestTraceListener.h"
+#include "logger/log.h"
+#include "logger/console-trace-listener.h"
+#include "logger/scoped-trace-listener-register.h"
+#include "logger/testT-trace-listener.h"
 
-#include "Memory/IReferenceCounted.h"
-#include "Memory/Reference.h"
-#include "Memory/ReferenceCounted.h"
+#include "memory/i-reference-counted.h"
+#include "memory/reference.h"
+#include "memory/reference-counted.h"
 
-#include "System/MockFileSystem.h"
-#include "System/MockLibraryManager.h"
-#include "System/MockProcessManager.h"
-#include "System/MockSystem.h"
-#include "System/ScopedFileSystemRegister.h"
-#include "System/ScopedLibraryManagerRegister.h"
-#include "System/ScopedProcessManagerRegister.h"
-#include "System/ScopedSystemRegister.h"
-#include "System/STLFileSystem.h"
-#include "System/STLSystem.h"
+#include "system/mock-file-system.h"
+#include "system/mock-library-manager.h"
+#include "system/mock-process-manager.h"
+#include "system/mock-system.h"
+#include "system/scoped-file-system-register.h"
+#include "system/scoped-library-manager-register.h"
+#include "system/scopedProcess-manager-register.h"
+#include "system/scoped-system-register.h"
+#include "system/stl-file-system.h"
+#include "system/stl-system.h"
 
 #if defined(_WIN32)
-#include "System/SmartHandle.h"
-#include "System/WindowsDynamicLibraryManager.h"
-#include "System/WindowsProcessManager.h"
+#include "system/smart-jandle.h"
+#include "system/windows-dynamic-library-manager.h"
+#include "system/windows-process-manager.h"
 #elif defined(__linux__)
-#include "System/LinuxProcessManager.h"
+#include "system/linux-process-manager.h"
 #endif
