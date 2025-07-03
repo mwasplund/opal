@@ -1,0 +1,51 @@
+﻿// <copyright file="i-console-manager.h" company="Soup">
+// Copyright (c) Soup. All rights reserved.
+// </copyright>
+
+#pragma once
+#include "i-console-input-stream.h"
+
+namespace Opal::IO
+{
+	/// <summary>
+	/// The input manager interface
+	/// Interface mainly used to allow for unit testing client code
+	/// </summary>
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class IConsoleManager
+	{
+	public:
+		/// <summary>
+		/// Gets the current active manager
+		/// </summary>
+		static IConsoleManager& Current()
+		{
+			if (_current == nullptr)
+				throw std::runtime_error("No console manager implementation registered.");
+			return *_current;
+		}
+
+		/// <summary>
+		/// Register a new active input manager
+		/// </summary>
+		static void Register(std::shared_ptr<IConsoleManager> manager)
+		{
+			_current = std::move(manager);
+		}
+
+	public:
+		/// <summary>
+		/// Get the standard input stream
+		/// </summary>
+		virtual std::shared_ptr<IConsoleInputStream> GetStandardInput() = 0;
+
+	private:
+		static std::shared_ptr<IConsoleManager> _current;
+	};
+
+#ifdef OPAL_IMPLEMENTATION
+	std::shared_ptr<IConsoleManager> IConsoleManager::_current = nullptr;
+#endif
+}

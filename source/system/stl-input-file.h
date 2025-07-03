@@ -1,0 +1,41 @@
+﻿// <copyright file="stl-input-file.h" company="Soup">
+// Copyright (c) Soup. All rights reserved.
+// </copyright>
+
+#pragma once
+#include "i-input-file.h"
+
+namespace Opal::System
+{
+
+	/// <summary>
+	/// The standard library input file implementation
+	/// </summary>
+	class STLInputFile : public IInputFile
+	{
+	public:
+		STLInputFile(std::ifstream stream) :
+			_stream(std::move(stream))
+		{
+		}
+
+		/// <summary>
+		/// Gets the file stream
+		/// </summary>
+		std::istream& GetInStream() override final
+		{
+			return _stream;
+		}
+
+		/// <summary>
+		/// Close the file stream
+		/// </summary>
+		void Close() override final
+		{
+			_stream.close();
+		}
+
+	private:
+		std::ifstream _stream;
+	};
+}
