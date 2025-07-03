@@ -2,7 +2,9 @@ Version: 5
 Closures: {
 	Root: {
 		'C++': {
-			Opal: { Version: './', Build: 'Build0', Tool: 'Tool0' }
+			Opal: { Version: '../Source/', Build: 'Build0', Tool: 'Tool0' }
+			'Opal.UnitTests': { Version: './', Build: 'Build0', Tool: 'Tool0' }
+			'mwasplund|Soup.Test.Assert': { Version: 0.5.0, Build: 'Build0', Tool: 'Tool0' }
 		}
 	}
 	Build0: {

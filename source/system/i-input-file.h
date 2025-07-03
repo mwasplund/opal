@@ -1,0 +1,25 @@
+﻿// <copyright file="i-input-file.h" company="Soup">
+// Copyright (c) Soup. All rights reserved.
+// </copyright>
+
+#pragma once
+#include "i-file.h"
+
+namespace Opal::System
+{
+	/// <summary>
+	/// The input file interface
+	/// Interface mainly used to allow for unit testing client code
+	/// </summary>
+	#ifdef SOUP_BUILD
+	export
+	#endif
+	class IInputFile : virtual public IFile
+	{
+	public:
+		/// <summary>
+		/// Gets the input stream
+		/// </summary>
+		virtual std::istream& GetInStream() = 0;
+	};
+}
