@@ -1,9 +1,9 @@
-// <copyright file="ScopedConsoleManagerRegister.h" company="Soup">
+// <copyright file="scoped-console-manager-register.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "IConsoleManager.h"
+#include "i-console-manager.h"
 
 namespace Opal::IO
 {

@@ -1,9 +1,9 @@
-﻿// <copyright file="Log.h" company="Soup">
+﻿// <copyright file="log.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "EventTypeFilter.h"
+#include "event-type-filter.h"
 
 namespace Opal
 {

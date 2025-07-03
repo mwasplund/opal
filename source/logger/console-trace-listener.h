@@ -1,9 +1,9 @@
-// <copyright file="ConsoleTraceListener.h" company="Soup">
+// <copyright file="console-trace-listener.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "TraceListener.h"
+#include "trace-listener.h"
 
 namespace Opal
 {

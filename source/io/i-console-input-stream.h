@@ -1,4 +1,4 @@
-﻿// <copyright file="IConsoleInputStream.h" company="Soup">
+﻿// <copyright file="i-console-input-stream.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 

@@ -1,9 +1,9 @@
-﻿// <copyright file="IConsoleManager.h" company="Soup">
+﻿// <copyright file="i-console-manager.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "IConsoleInputStream.h"
+#include "i-console-input-stream.h"
 
 namespace Opal::IO
 {

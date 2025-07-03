@@ -1,4 +1,4 @@
-// <copyright file="TraceListener.h" company="Soup">
+// <copyright file="trace-listener.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 

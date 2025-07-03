@@ -1,10 +1,10 @@
-﻿// <copyright file="MockConsoleManager.h" company="Soup">
+﻿// <copyright file="mock-console-manager.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "IConsoleManager.h"
-#include "MockConsoleInputStream.h"
+#include "i-console-manager.h"
+#include "mock-console-input-stream.h"
 
 namespace Opal::IO
 {

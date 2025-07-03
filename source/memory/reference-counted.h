@@ -1,8 +1,9 @@
-﻿// <copyright file="ReferenceCounted.h" company="Soup">
+﻿// <copyright file="reference-counted.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
+
 #pragma once
-#include "IReferenceCounted.h"
+#include "i-reference-counted.h"
 
 namespace Opal::Memory
 {
