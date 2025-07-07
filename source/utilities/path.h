@@ -296,7 +296,7 @@ namespace Opal
 			// Force the base filenames as directories
 			if (base.HasFileName())
 			{
-				throw new std::runtime_error("Cannot combine a path that is a file as the base.");
+				throw std::runtime_error("Cannot combine a path that is a file as the base.");
 			}
 
 			// Determine how many of the directories match
@@ -451,13 +451,13 @@ namespace Opal
 			#ifdef _DEBUG
 			auto firstAlternateDirectory = _value.find_first_of(AlternateDirectorySeparator);
 			if (firstAlternateDirectory != std::string::npos)
-				throw new std::runtime_error("Debug check for windows ridiculous directory separator");
+				throw std::runtime_error("Debug check for windows ridiculous directory separator");
 			#endif
 
 			auto firstSeparator = _value.find_first_of(DirectorySeparator);
 			if (firstSeparator == std::string::npos)
 			{
-				throw new std::runtime_error("A path must have a directory separator");
+				throw std::runtime_error("A path must have a directory separator");
 			}
 
 			auto root = std::string_view(_value.c_str(), firstSeparator);
@@ -473,7 +473,7 @@ namespace Opal
 			}
 			else
 			{
-				throw new std::runtime_error(std::format("Unknown directory root {}", root));
+				throw std::runtime_error(std::format("Unknown directory root {}", root));
 			}
 
 			// Check if has file name
