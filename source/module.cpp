@@ -33,7 +33,7 @@
 #include <spawn.h>
 #include <sys/wait.h>
 
-#include "Utilities/Environment.h"
+#include "utilities/environment.h"
 
 #else
 #error Uknown Platform

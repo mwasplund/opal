@@ -105,7 +105,7 @@ namespace Opal
 			if (TryParse(value, result))
 				return result;
 			else
-				throw new std::runtime_error("Invalid semantic version");
+				throw std::runtime_error("Invalid semantic version");
 		}
 
 	public:
