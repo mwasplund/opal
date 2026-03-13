@@ -1,16 +1,16 @@
-Name: 'Opal.UnitTests'
+Name: 'opal-unit-tests'
 Language: 'C++|0'
 Version: 1.0.0
 Type: 'Executable'
 Source: [
-	'gen/Main.cpp'
+	'gen/main.cpp'
 ]
 IncludePaths: [
 	'./'
 ]
 Dependencies: {
 	Runtime: [
-		'mwasplund|Soup.Test.Assert@0'
-		'../Source/'
+		'mwasplund|soup-test-assert@0'
+		'../source/'
 	]
 }
