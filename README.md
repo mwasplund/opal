@@ -19,3 +19,22 @@ My old Dell XPS 15 with Win11
 |               14.03 |       71,251,652.40 |    2.3% |      0.02 | `SemanticVersion Parse Major Only`
 |               26.83 |       37,268,496.07 |    2.2% |      0.03 | `SemanticVersion Parse With Minor`
 |               38.17 |       26,197,729.46 |    3.9% |      0.05 | `SemanticVersion Parse With Minor and Path`
+
+
+Ubuntu 24.04 Lenovo Yoga slim 7i
+
+|               ns/op |                op/s |    err% |     total | benchmark
+|--------------------:|--------------------:|--------:|----------:|:----------
+|              372.33 |        2,685,777.97 |    1.4% |      0.04 | `Concatenate Paths`
+|            1,480.55 |          675,423.89 |    0.7% |      0.22 | `Concatenate Paths With Up Reference`
+|               51.18 |       19,540,764.85 |    0.3% |      0.06 | `Initialize Path With Root`
+|              207.76 |        4,813,308.19 |    0.6% |      0.25 | `Create Windows Path With Root`
+|               57.96 |       17,254,733.34 |    0.2% |      0.07 | `Initialize Path Relative`
+|              122.54 |        8,160,308.91 |    0.2% |      0.01 | `Get User Profile Directory`
+|            1,598.78 |          625,478.55 |    0.7% |      0.19 | `Get Current Directory`
+|               29.66 |       33,719,033.95 |    1.2% |      0.04 | `SemanticVersion ToString Major Only`
+|              112.78 |        8,866,614.83 |    0.6% |      0.13 | `SemanticVersion ToString With Minor`
+|              199.38 |        5,015,617.49 |    0.2% |      0.24 | `SemanticVersion ToString With Minor and Path`
+|               42.97 |       23,271,749.99 |    0.6% |      0.05 | `SemanticVersion Parse Major Only`
+|               82.38 |       12,138,866.31 |    0.6% |      0.10 | `SemanticVersion Parse With Minor`
+|              102.36 |        9,769,627.69 |    0.5% |      0.12 | `SemanticVersion Parse With Minor and Path`
