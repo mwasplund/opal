@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <cstddef>
 export module Opal:Reference;
 import :IReferenceCounted;
 

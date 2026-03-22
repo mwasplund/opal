@@ -2,9 +2,14 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-#pragma once
-#include "i-library-manager
-#include "mock-library
+module;
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
+export module Opal:MockLibraryManager;
+import :ILibraryManager;
+import :MockLibrary;
 
 namespace Opal::System
 {

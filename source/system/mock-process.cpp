@@ -2,8 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <sstream>
+#include <vector>
 export module Opal:MockProcess;
-import :IProcess
+import :IProcess;
 
 namespace Opal::System
 {

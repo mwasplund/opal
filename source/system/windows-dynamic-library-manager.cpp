@@ -6,6 +6,7 @@ export module Opal:WindowsDynamicLibraryManager;
 import :ILibraryManager;
 import :WindowsDynamicLibrary;
 
+#if defined(_WIN32)
 namespace Opal::System
 {
 	/// <summary>
@@ -30,3 +31,4 @@ namespace Opal::System
 		}
 	};
 }
+#endif

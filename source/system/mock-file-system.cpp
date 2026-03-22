@@ -2,6 +2,13 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <filesystem>
+#include <functional>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 export module Opal:MockFileSystem;
 import :IFileSystem;
 import :MockDirectory;

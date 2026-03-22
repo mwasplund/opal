@@ -2,10 +2,15 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <array>
+#include <memory>
+#include <vector>
 export module Opal:LinuxProcessManager;
-import :IProcessManager
-import :LinuxProcess
+import :IProcessManager;
+import :LinuxProcess;
 
+#if defined(__linux__)
 namespace Opal::System
 {
 	/// <summary>
@@ -56,3 +61,4 @@ namespace Opal::System
 		}
 	};
 }
+#endif

@@ -2,8 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <iostream>
 export module Opal:IOutputFile;
-import :IFile
+import :IFile;
 
 namespace Opal::System
 {

@@ -2,9 +2,15 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <atomic>
+#include <functional>
+#include <map>
+#include <memory>
+#include <string>
 export module Opal:MockProcessManager;
-import :IProcessManager
-import :MockProcess
+import :IProcessManager;
+import :MockProcess;
 
 namespace Opal::System
 {

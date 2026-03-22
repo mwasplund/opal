@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <fstream>
 export module Opal:STLOutputFile;
 import :IOutputFile;
 

@@ -2,9 +2,21 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#if defined(__linux__)
+#include <spawn.h>
+#include <sys/wait.h>
+#include "../utilities/environment.h"
+#endif
+
+#include <filesystem>
+#include <string>
+#include <vector>
 export module Opal:LinuxProcess;
 import :IProcess;
+import :Path;
 
+#if defined(__linux__)
 namespace Opal::System
 {
 	/// <summary>
@@ -139,3 +151,4 @@ namespace Opal::System
 		}
 	};
 }
+#endif

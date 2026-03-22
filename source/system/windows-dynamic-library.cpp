@@ -4,6 +4,7 @@
 
 export module Opal:WindowsDynamicLibrary;
 
+#if defined(_WIN32)
 namespace Opal::System
 {
 	/// <summary>
@@ -83,3 +84,4 @@ namespace Opal::System
 		HINSTANCE _handle;
 	};
 }
+#endif

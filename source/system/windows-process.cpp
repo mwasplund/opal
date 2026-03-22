@@ -5,6 +5,7 @@
 export module Opal:WindowsProcess;
 import :IProcess;
 
+#if defined(_WIN32)
 namespace Opal::System
 {
 	/// <summary>
@@ -276,3 +277,4 @@ namespace Opal::System
 		}
 	};
 }
+#endif

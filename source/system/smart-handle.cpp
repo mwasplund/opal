@@ -4,6 +4,7 @@
 
 export module Opal:SmartHandle;
 
+#if defined(_WIN32)
 namespace Opal::System
 {
 	export class SmartHandle
@@ -65,3 +66,4 @@ namespace Opal::System
 		HANDLE _handle;
 	};
 }
+#endif

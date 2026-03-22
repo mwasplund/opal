@@ -2,6 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <filesystem>
+#include <sstream>
 export module Opal:MockFile;
 import :IFileSystem;
 

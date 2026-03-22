@@ -2,8 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <atomic>
+#include <cstdlib>
 export module Opal:ReferenceCounted;
-import :IReferenceCounted
+import :IReferenceCounted;
 
 namespace Opal::Memory
 {

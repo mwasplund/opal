@@ -2,6 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <map>
+#include <sstream>
+#include <string>
+#include <vector>
 export module Opal:MockLibrary;
 import :ILibrary;
 

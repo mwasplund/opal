@@ -2,8 +2,12 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <memory>
+#include <vector>
 export module Opal:IProcessManager;
 import :IProcess;
+import :Path;
 
 namespace Opal::System
 {
@@ -51,7 +55,5 @@ namespace Opal::System
 		static std::shared_ptr<IProcessManager> _current;
 	};
 
-#ifdef OPAL_IMPLEMENTATION
 	std::shared_ptr<IProcessManager> IProcessManager::_current = nullptr;
-#endif
 }

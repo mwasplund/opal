@@ -6,6 +6,7 @@ module;
 #include <memory>
 export module Opal:ILibraryManager;
 import :ILibrary;
+import :Path;
 
 namespace Opal::System
 {

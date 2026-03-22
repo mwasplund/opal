@@ -2,6 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <filesystem>
+#include <memory>
 export module Opal:ISystem;
 
 namespace Opal::System

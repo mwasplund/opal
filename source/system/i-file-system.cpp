@@ -3,10 +3,14 @@
 // </copyright>
 
 module;
+#include <filesystem>
+#include <functional>
 #include <memory>
+#include <vector>
 export module Opal:IFileSystem;
 import :IInputFile;
 import :IOutputFile;
+import :Path;
 
 export namespace Opal::System
 {
@@ -121,7 +125,5 @@ export namespace Opal::System
 		static std::shared_ptr<IFileSystem> _current;
 	};
 
-#ifdef OPAL_IMPLEMENTATION
 	std::shared_ptr<IFileSystem> IFileSystem::_current = nullptr;
-#endif
 }

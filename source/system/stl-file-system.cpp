@@ -2,8 +2,14 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <array>
+#include <filesystem>
+#include <format>
+#include <functional>
 export module Opal:STLFileSystem;
 import :IFileSystem;
+import :Path;
 import :STLInputFile;
 import :STLOutputFile;
 

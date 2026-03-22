@@ -2,6 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <chrono>
+#include <filesystem>
+#include <vector>
+#include <string>
 export module Opal:MockSystem;
 import :ISystem;
 

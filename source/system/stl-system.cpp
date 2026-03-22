@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <filesystem>
 export module Opal:STLSystem;
 import :ISystem;
 
