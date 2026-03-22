@@ -2,9 +2,13 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <memory>
+#include <vector>
+#include <string>
 export module Opal:MockConsoleManager;
-import :IConsoleManager
-import :MockConsoleInputStream
+import :IConsoleManager;
+import :MockConsoleInputStream;
 
 namespace Opal::IO
 {

@@ -2,8 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-export module Opal:ScopedFileSystemRegister
-import :IFileSystem
+export module Opal:ScopedFileSystemRegister;
+import :IFileSystem;
 
 namespace Opal::System
 {

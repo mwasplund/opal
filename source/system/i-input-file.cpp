@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <iostream>
 export module Opal:IInputFile;
 import :IFile;
 

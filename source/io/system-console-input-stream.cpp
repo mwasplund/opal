@@ -2,6 +2,9 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <iostream>
+#include <string>
 export module Opal:SystemConsoleInputStream;
 import :IConsoleInputStream;
 

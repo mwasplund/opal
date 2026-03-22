@@ -2,9 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <memory>
 export module Opal:SystemConsoleManager;
-import :IConsoleManager
-import :SystemConsoleInputStream
+import :IConsoleManager;
+import :SystemConsoleInputStream;
 
 namespace Opal::IO
 {

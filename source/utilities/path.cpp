@@ -2,6 +2,13 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <algorithm>
+#include <format>
+#include <optional>
+#include <sstream>
+#include <string>
+#include <vector>
 export module Opal:Path;
 
 namespace Opal

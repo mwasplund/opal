@@ -2,8 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <memory>
 export module Opal:ILibraryManager;
-import :ILibrary
+import :ILibrary;
 
 namespace Opal::System
 {

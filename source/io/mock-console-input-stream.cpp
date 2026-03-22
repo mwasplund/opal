@@ -2,8 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <vector>
+#include <sstream>
 export module Opal:MockConsoleInputStream;
-import :IConsoleInputStream
+import :IConsoleInputStream;
 
 namespace Opal::IO
 {

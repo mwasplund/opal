@@ -2,6 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <charconv>
+#include <optional>
+#include <stdexcept>
+#include <string>
 export module Opal:SemanticVersion;
 
 namespace Opal

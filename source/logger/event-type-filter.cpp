@@ -2,8 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-#pragma once
-#include "trace-listener.h"
+module;
+#include <cstdint>
+export module Opal:EventTypeFilter;
+import :TraceListener;
 
 namespace Opal
 {

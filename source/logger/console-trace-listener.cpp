@@ -2,8 +2,12 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <iostream>
+#include <memory>
+#include <string>
 export module Opal:ConsoleTraceListener;
-import :TraceListener
+import :TraceListener;
 
 namespace Opal
 {

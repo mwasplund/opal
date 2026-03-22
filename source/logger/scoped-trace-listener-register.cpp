@@ -2,8 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-export module Opal:ScopedTraceListenerRegister
-import :TraceListener
+module;
+#include <memory>
+export module Opal:ScopedTraceListenerRegister;
+import :Log;
+import :TraceListener;
 
 namespace Opal
 {
