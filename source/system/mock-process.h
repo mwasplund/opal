@@ -1,6 +1,6 @@
 ﻿// <copyright file="mock-process.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
-// </copyrightm
+// </copyright>
 
 #pragma once
 #include "i-process.h"
@@ -10,10 +10,7 @@ namespace Opal::System
 	/// <summary>
 	/// A mock process executable using system
 	/// </summary>
-	#ifdef SOUP_BUILD
-	export
-	#endif
-	class MockProcess : public IProcess
+	export class MockProcess : public IProcess
 	{
 	public:
 		/// <summary>
