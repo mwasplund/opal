@@ -1,10 +1,10 @@
-﻿// <copyright file="mock-process-manager.h" company="Soup">
+﻿// <copyright file="mock-process-manager.cpp" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-#pragma once
-#include "i-process-manager.h"
-#include "mock-process.h"
+export module Opal:MockProcessManager;
+import :IProcessManager
+import :MockProcess
 
 namespace Opal::System
 {

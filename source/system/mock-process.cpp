@@ -1,9 +1,9 @@
-﻿// <copyright file="mock-process.h" company="Soup">
+﻿// <copyright file="mock-process.cpp" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-#pragma once
-#include "i-process.h"
+export module Opal:MockProcess;
+import :IProcess
 
 namespace Opal::System
 {

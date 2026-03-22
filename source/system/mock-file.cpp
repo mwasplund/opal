@@ -1,9 +1,9 @@
-﻿// <copyright file="mock-file.h" company="Soup">
+﻿// <copyright file="mock-file.cpp" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-#pragma once
-#include "i-file-system.h"
+export module Opal:MockFile;
+import :IFileSystem;
 
 namespace Opal::System
 {

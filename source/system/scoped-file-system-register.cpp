@@ -1,9 +1,9 @@
-// <copyright file="scoped-file-system-register.h" company="Soup">
+// <copyright file="scoped-file-system-register.cpp" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-#pragma once
-#include "i-file-system.h"
+export module Opal:ScopedFileSystemRegister
+import :IFileSystem
 
 namespace Opal::System
 {

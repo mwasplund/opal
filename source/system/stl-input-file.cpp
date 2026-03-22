@@ -1,17 +1,16 @@
-﻿// <copyright file="stl-input-file.h" company="Soup">
+﻿// <copyright file="stl-input-file.cpp" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-#pragma once
-#include "i-input-file.h"
+export module Opal:STLInputFile;
+import :IInputFile;
 
 namespace Opal::System
 {
-
 	/// <summary>
 	/// The standard library input file implementation
 	/// </summary>
-	class STLInputFile : public IInputFile
+	export class STLInputFile : public IInputFile
 	{
 	public:
 		STLInputFile(std::ifstream stream) :

@@ -1,11 +1,11 @@
-﻿// <copyright file="stl-file-system.h" company="Soup">
+﻿// <copyright file="stl-file-system.cpp" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-#pragma once
-#include "i-file-system.h"
-#include "stl-input-file.h"
-#include "stl-output-file.h"
+export module Opal:STLFileSystem;
+import :IFileSystem;
+import :STLInputFile;
+import :STLOutputFile;
 
 namespace Opal::System
 {

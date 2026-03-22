@@ -1,8 +1,8 @@
-﻿// <copyright file="smart-handle.h" company="Soup">
+﻿// <copyright file="smart-handle.cpp" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-#pragma once
+export module Opal:SmartHandle;
 
 namespace Opal::System
 {

@@ -1,10 +1,10 @@
-﻿// <copyright file="mock-library-manager.h" company="Soup">
+﻿// <copyright file="mock-library-manager.cpp" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
 #pragma once
-#include "i-library-manager.h"
-#include "mock-library.h"
+#include "i-library-manager
+#include "mock-library
 
 namespace Opal::System
 {

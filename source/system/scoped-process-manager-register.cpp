@@ -1,9 +1,9 @@
-// <copyright file="scoped-process-manager-register.h" company="Soup">
+// <copyright file="scoped-process-manager-register.cpp" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-#pragma once
-#include "i-process-manager.h"
+export module Opal:ScopedProcessManagerRegister;
+import :IProcessManager;
 
 namespace Opal::System
 {

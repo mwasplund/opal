@@ -1,9 +1,9 @@
-// <copyright file="scoped-library-manager-register.h" company="Soup">
+// <copyright file="scoped-library-manager-register.cpp" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-#pragma once
-#include "i-library-manager.h"
+export module Opal:ScopedLibraryManagerRegister;
+import :ILibraryManager;
 
 namespace Opal::System
 {

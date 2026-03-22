@@ -1,17 +1,16 @@
-﻿// <copyright file="stl-output-file.h" company="Soup">
+﻿// <copyright file="stl-output-file.cpp" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-#pragma once
-#include "i-output-file.h"
+export module Opal:STLOutputFile;
+import :IOutputFile;
 
 namespace Opal::System
 {
-
 	/// <summary>
 	/// The standard library output file implementation
 	/// </summary>
-	class STLOutputFile : public IOutputFile
+	export class STLOutputFile : public IOutputFile
 	{
 	public:
 		STLOutputFile(std::ofstream stream) :
