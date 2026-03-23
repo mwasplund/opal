@@ -16,8 +16,8 @@ using namespace Opal;
 using namespace Opal::System;
 using namespace Soup::Test;
 
-#include "Utils/PathTests.gen.h"
-#include "Utils/SemanticVersionTests.gen.h"
+#include "utils/path-tests.gen.h"
+#include "utils/semantic-version-tests.gen.h"
 
 int main()
 {
