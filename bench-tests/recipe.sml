@@ -1,13 +1,13 @@
 Name: 'opal-bench-tests'
 Language: 'C++|0'
-Version: '1.0.0'
+Version: 1.0.0
 Type: 'Executable'
 Source: [
-	'Main.cpp'
-	'Nanobench.cpp'
+	'main.cpp'
+	'nanobench.cpp'
 ]
 Dependencies: {
 	Runtime: [
-		'../Source/'
+		'../source/'
 	]
 }
