@@ -7,29 +7,21 @@
 
 namespace Opal
 {
-	// MSVC Bug https://developercommunity.visualstudio.com/t/Modules-ICE-when-using-cout-inside-of-/10299789
-	#ifndef SOUP_BUILD
-	inline
-	#endif
-	void DoWriteLine(const std::string& message)
-	{
-		std::cout << message << std::endl;
-	}
-
 	/// <summary>
 	/// Console logger that wraps the base <see cref="TraceListener"/>
 	/// </summary>
-	#ifdef SOUP_BUILD
-	export
-	#endif
-	class ConsoleTraceListener : public TraceListener
+	export class ConsoleTraceListener : public TraceListener
 	{
+	private:
+		std::mutex _mutex;
+
 	public:
 		/// <summary>
 		/// Initializes a new instance of the <see cref='ConsoleTraceListener'/> class.
 		/// </summary>
 		ConsoleTraceListener() :
-			TraceListener()
+			TraceListener(),
+			_mutex()
 		{
 		}
 
@@ -54,16 +46,13 @@ namespace Opal
 		/// </summary>
 		virtual void WriteLine(const std::string& message) override final
 		{
-			// if (NeedIndent)
-			// {
-			//	 WriteIndent();
-			// }
+			auto lock = std::lock_guard<std::mutex>(_mutex);
 
 			SetConsoleColor();
-			DoWriteLine(message);
-			// TODO: restore color
 
-			// NeedIndent = true;
+			std::cout << message << std::endl;
+
+			// TODO: restore color
 		}
 
 	private:
