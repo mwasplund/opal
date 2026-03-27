@@ -1,4 +1,10 @@
-﻿export module Opal;
+﻿module;
+
+#include <charconv>
+#include <optional>
+#include <stdexcept>
+#include <string>
+export module Opal;
 
 // io
 export import :IConsoleInputStream;
@@ -58,4 +64,5 @@ export import :WindowsProcess;
 
 // utilities
 export import :Path;
-export import :SemanticVersion;
+
+#include "utilities/semantic-version.h"

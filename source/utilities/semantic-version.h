@@ -1,13 +1,6 @@
-﻿// <copyright file="semantic-version.cpp" company="Soup">
+﻿// <copyright file="semantic-version.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
-
-module;
-#include <charconv>
-#include <optional>
-#include <stdexcept>
-#include <string>
-export module Opal:SemanticVersion;
 
 namespace Opal
 {
