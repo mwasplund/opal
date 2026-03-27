@@ -1,17 +1,13 @@
 ﻿// <copyright file="semantic-version.h" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
-#pragma once
 
 namespace Opal
 {
 	/// <summary>
 	/// The semantic version class
 	/// </summary>
-	#ifdef SOUP_BUILD
-	export
-	#endif
-	class SemanticVersion
+	export class SemanticVersion
 	{
 	public:
 		/// <summary>
