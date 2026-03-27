@@ -16,12 +16,16 @@ namespace Opal
 	/// </summary>
 	export class ConsoleTraceListener : public TraceListener
 	{
+	private:
+		std::mutex _mutex;
+
 	public:
 		/// <summary>
 		/// Initializes a new instance of the <see cref='ConsoleTraceListener'/> class.
 		/// </summary>
 		ConsoleTraceListener() :
-			TraceListener()
+			TraceListener(),
+			_mutex()
 		{
 		}
 
@@ -46,17 +50,12 @@ namespace Opal
 		/// </summary>
 		virtual void WriteLine(const std::string& message) override final
 		{
-			// if (NeedIndent)
-			// {
-			//	 WriteIndent();
-			// }
+			auto lock = std::lock_guard<std::mutex>(_mutex);
 
 			SetConsoleColor();
 			std::cout << message << std::endl;
 
 			// TODO: restore color
-
-			// NeedIndent = true;
 		}
 
 	private:
