@@ -32,14 +32,14 @@ namespace Opal::System
 		{
 			#ifdef _WIN32
 				auto buffer = std::array<char, MAX_PATH + 2>();
-				HRESULT result = SHGetFolderPath(
+				HRESULT result = SHGetFolderPathA(
 					nullptr,
 					CSIDL_PROFILE,
 					nullptr,
 					SHGFP_TYPE_CURRENT,
 					buffer.data());
 				if (result != S_OK)
-					throw std::runtime_error("SHGetFolderPath failed.");
+					throw std::runtime_error("SHGetFolderPathA failed.");
 
 				// Ensure the directory ends with a separator
 				auto userProfileLength = strlen(buffer.data());
