@@ -42,6 +42,8 @@
 
 export module Opal;
 
+export import :SequenceMap;
+
 #define OPAL_IMPLEMENTATION
 
 #include "utilities/path.h"
