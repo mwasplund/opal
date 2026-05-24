@@ -7,6 +7,7 @@ module;
 #include <functional>
 #include <map>
 #include <memory>
+#include <sstream>
 #include <string>
 export module Opal:MockProcessManager;
 import :IProcessManager;

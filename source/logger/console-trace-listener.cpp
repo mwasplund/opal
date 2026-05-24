@@ -5,6 +5,7 @@
 module;
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <string>
 export module Opal:ConsoleTraceListener;
 import :TraceListener;

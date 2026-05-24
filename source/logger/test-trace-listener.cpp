@@ -4,6 +4,7 @@
 
 module;
 #include <memory>
+#include <string>
 #include <vector>
 export module Opal:TestTraceListener;
 import :TraceListener;

@@ -4,6 +4,8 @@
 
 module;
 #include <memory>
+#include <stdexcept>
+#include <string>
 #include <vector>
 export module Opal:IProcessManager;
 import :IProcess;

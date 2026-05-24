@@ -5,6 +5,7 @@
 module;
 #include <memory>
 #include <vector>
+#include <sstream>
 #include <string>
 export module Opal:MockConsoleManager;
 import :IConsoleManager;

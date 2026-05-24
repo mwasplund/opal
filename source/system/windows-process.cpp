@@ -2,8 +2,16 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <vector>
+#include <windows.h>
 export module Opal:WindowsProcess;
 import :IProcess;
+import :Path;
+import :SmartHandle;
 
 #if defined(_WIN32)
 namespace Opal::System

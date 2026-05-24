@@ -2,8 +2,18 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <array>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <vector>
+#include <windows.h>
+#undef CreateProcess
 export module Opal:WindowsProcessManager;
+import :IProcess;
 import :IProcessManager;
+import :Path;
 import :WindowsProcess;
 
 #if defined(_WIN32)

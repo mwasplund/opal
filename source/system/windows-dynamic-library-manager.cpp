@@ -2,6 +2,10 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <memory>
+#include <string>
+#include <windows.h>
 export module Opal:WindowsDynamicLibraryManager;
 import :ILibraryManager;
 import :WindowsDynamicLibrary;

@@ -2,6 +2,8 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <windows.h>
 export module Opal:SmartHandle;
 
 #if defined(_WIN32)

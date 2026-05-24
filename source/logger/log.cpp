@@ -4,6 +4,7 @@
 
 module;
 #include <memory>
+#include <stdexcept>
 export module Opal:Log;
 import :EventTypeFilter;
 

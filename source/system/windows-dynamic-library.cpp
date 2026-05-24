@@ -2,7 +2,11 @@
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
+module;
+#include <string>
+#include <windows.h>
 export module Opal:WindowsDynamicLibrary;
+import :ILibrary;
 
 #if defined(_WIN32)
 namespace Opal::System

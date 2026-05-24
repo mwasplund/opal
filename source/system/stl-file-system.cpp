@@ -7,6 +7,14 @@ module;
 #include <filesystem>
 #include <format>
 #include <functional>
+#include <fstream>
+#ifdef _WIN32
+#include <Shlobj.h>
+#include <windows.h>
+#undef GetCurrentDirectory
+#undef CopyFile
+#undef CreateDirectory
+#endif
 export module Opal:STLFileSystem;
 import :IFileSystem;
 import :Path;
