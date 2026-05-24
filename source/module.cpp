@@ -1,6 +1,16 @@
 ﻿module;
 
-#include <charconv>
+#include <algorithm>
+#include <array>
+#include <atomic>
+#include <chrono>
+#include <functional>
+#include <fstream>
+#include <filesystem>
+#include <iostream>
+#include <locale>
+#include <map>
+#include <mutex>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -64,5 +74,6 @@ export import :WindowsProcess;
 
 // utilities
 export import :Path;
+export import :SequenceMap;
 
 #include "utilities/semantic-version.h"
