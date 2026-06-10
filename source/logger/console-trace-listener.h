@@ -5,69 +5,55 @@
 #pragma once
 #include "trace-listener.h"
 
-namespace Opal
-{
-	/// <summary>
-	/// Console logger that wraps the base <see cref="TraceListener"/>
-	/// </summary>
-	export class ConsoleTraceListener : public TraceListener
-	{
-	private:
-		std::mutex _mutex;
+namespace Opal {
+/// <summary>
+/// Console logger that wraps the base <see cref="TraceListener"/>
+/// </summary>
+export class ConsoleTraceListener : public TraceListener {
+private:
+  std::mutex _mutex;
 
-	public:
-		/// <summary>
-		/// Initializes a new instance of the <see cref='ConsoleTraceListener'/> class.
-		/// </summary>
-		ConsoleTraceListener() :
-			TraceListener(),
-			_mutex()
-		{
-		}
+public:
+  /// <summary>
+  /// Initializes a new instance of the <see cref='ConsoleTraceListener'/>
+  /// class.
+  /// </summary>
+  ConsoleTraceListener() : TraceListener(), _mutex() {}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref='ConsoleTraceListener'/> class.
-		/// </summary>
-		ConsoleTraceListener(
-			std::string name,
-			std::shared_ptr<IEventFilter> filter,
-			bool showEventType,
-			bool showEventId) :
-			TraceListener(
-				std::move(name),
-				std::move(filter),
-				showEventType,
-				showEventId)
-		{
-		}
+  /// <summary>
+  /// Initializes a new instance of the <see cref='ConsoleTraceListener'/>
+  /// class.
+  /// </summary>
+  ConsoleTraceListener(std::string name, std::shared_ptr<IEventFilter> filter,
+                       bool showEventType, bool showEventId, bool showTimestamp)
+      : TraceListener(std::move(name), std::move(filter), showEventType,
+                      showEventId, showTimestamp) {}
 
-		/// <summary>
-		/// Writes a message and newline terminator
-		/// </summary>
-		virtual void WriteLine(const std::string& message) override final
-		{
-			auto lock = std::lock_guard<std::mutex>(_mutex);
+  /// <summary>
+  /// Writes a message and newline terminator
+  /// </summary>
+  virtual void WriteLine(const std::string &message) override final {
+    auto lock = std::lock_guard<std::mutex>(_mutex);
 
-			SetConsoleColor();
+    SetConsoleColor();
 
-			std::cout << message << std::endl;
+    std::cout << message << std::endl;
 
-			// TODO: restore color
-		}
+    // TODO: restore color
+  }
 
-	private:
-		void SetConsoleColor()
-		{
-			// TODO
-			// switch (_currentEvent)
-			// {
-			//	 case TraceEventType.Error:
-			//		 Console.ForegroundColor = ConsoleColor.Red;
-			//		 break;
-			//	 case TraceEventType.Warning:
-			//		 Console.ForegroundColor = ConsoleColor.Yellow;
-			//		 break;
-			// }
-		}
-	};
-}
+private:
+  void SetConsoleColor() {
+    // TODO
+    // switch (_currentEvent)
+    // {
+    //	 case TraceEventType.Error:
+    //		 Console.ForegroundColor = ConsoleColor.Red;
+    //		 break;
+    //	 case TraceEventType.Warning:
+    //		 Console.ForegroundColor = ConsoleColor.Yellow;
+    //		 break;
+    // }
+  }
+};
+} // namespace Opal
