@@ -1,3 +1,3 @@
 Name: 'opal'
 Language: 'C++|0'
-Version: 0.13.1
+Version: 0.13.2
