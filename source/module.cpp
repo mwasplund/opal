@@ -4,9 +4,9 @@
 #include <array>
 #include <atomic>
 #include <chrono>
-#include <functional>
-#include <fstream>
 #include <filesystem>
+#include <fstream>
+#include <functional>
 #include <iostream>
 #include <locale>
 #include <map>
@@ -19,8 +19,8 @@
 #if defined(_WIN32)
 
 #include <Windows.h>
-#include <shlobj.h>
 #include <psapi.h>
+#include <shlobj.h>
 
 #undef min
 #undef max
@@ -49,18 +49,13 @@ export import :SequenceMap;
 #include "utilities/path.h"
 #include "utilities/semantic-version.h"
 
-#include "io/system-console-manager.h"
 #include "io/mock-console-manager.h"
 #include "io/scoped-console-manager-register.h"
-
-#include "logger/log.h"
-#include "logger/console-trace-listener.h"
-#include "logger/scoped-trace-listener-register.h"
-#include "logger/test-trace-listener.h"
+#include "io/system-console-manager.h"
 
 #include "memory/i-reference-counted.h"
-#include "memory/reference.h"
 #include "memory/reference-counted.h"
+#include "memory/reference.h"
 
 #include "system/mock-file-system.h"
 #include "system/mock-library-manager.h"
@@ -72,6 +67,12 @@ export import :SequenceMap;
 #include "system/scoped-system-register.h"
 #include "system/stl-file-system.h"
 #include "system/stl-system.h"
+
+#include "logger/console-trace-listener.h"
+#include "logger/file-trace-listener.h"
+#include "logger/log.h"
+#include "logger/scoped-trace-listener-register.h"
+#include "logger/test-trace-listener.h"
 
 #if defined(_WIN32)
 #include "system/smart-handle.h"
