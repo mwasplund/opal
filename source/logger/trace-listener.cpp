@@ -27,200 +27,175 @@ export namespace Opal
 		Critical = 1 << 5,
 	};
 
-	class IEventFilter
-	{
-	public:
-		virtual bool ShouldTrace(TraceEventFlag eventType) = 0;
-	};
+class IEventFilter {
+public:
+  virtual bool ShouldTrace(TraceEventFlag eventType) = 0;
+};
 
-	/// <summary>
-	/// Base trace listener used to determine what events and properties to include in logs
-	/// </summary>
-	class TraceListener
-	{
-	protected:
-		/// <summary>
-		/// Initializes a new instance of the <see cref='TraceListener'/> class.
-		/// </summary>
-		TraceListener() :
-			TraceListener("", nullptr, true, true)
-		{
-		}
+/// <summary>
+/// Base trace listener used to determine what events and properties to include
+/// in logs
+/// </summary>
+class TraceListener {
+protected:
+  /// <summary>
+  /// Initializes a new instance of the <see cref='TraceListener'/> class.
+  /// </summary>
+  TraceListener() : TraceListener("", nullptr, true, true, false) {}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref='TraceListener'/> class using the specified name as the
-		/// listener.
-		/// </summary>
-		TraceListener(
-			std::string name,
-			std::shared_ptr<IEventFilter> filter,
-			bool showEventType,
-			bool showEventId) :
-			_name(std::move(name)),
-			_filter(std::move(filter)),
-			_showEventType(showEventType),
-			_showEventId(showEventId)
-		{
-		}
+  /// <summary>
+  /// Initializes a new instance of the <see cref='TraceListener'/> class using
+  /// the specified name as the listener.
+  /// </summary>
+  TraceListener(std::string name, std::shared_ptr<IEventFilter> filter,
+                bool showEventType, bool showEventId, bool showTimestamp)
+      : _name(std::move(name)), _filter(std::move(filter)),
+        _showEventType(showEventType), _showEventId(showEventId),
+        _showTimestamp(showTimestamp) {}
 
-		/// <summary>
-		/// Implementation dependant write methods
-		/// </summary>
-		virtual void WriteLine(const std::string& message) = 0;
+  /// <summary>
+  /// Implementation dependant write methods
+  /// </summary>
+  virtual void WriteLine(const std::string &message) = 0;
 
-	public:
-		/// <summary>
-		/// Gets a value indicating whether there is a custom event filter
-		/// </summary>
-		bool HasFilter() const
-		{
-			return _filter != nullptr;
-		}
+public:
+  /// <summary>
+  /// Gets a value indicating whether there is a custom event filter
+  /// </summary>
+  bool HasFilter() const { return _filter != nullptr; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether to show or hide the event type
-		/// </summary>
-		bool GetShowEventType() const
-		{
-			return _showEventType;
-		}
+  /// <summary>
+  /// Gets or sets a value indicating whether to show or hide the event type
+  /// </summary>
+  bool GetShowEventType() const { return _showEventType; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether to show or hide the event id
-		/// </summary>
-		bool GetShowEventId() const
-		{
-			return _showEventId;
-		}
-		void SetShowEventId(bool value)
-		{
-			_showEventId = value;
-		}
+  /// <summary>
+  /// Gets or sets a value indicating whether to show or hide the event
+  /// timestamp
+  /// </summary>
+  bool GetShowTimestamp() const { return _showTimestamp; }
 
-		/// <summary>
-		/// All other TraceEvent methods come through this one.
-		/// </summary>
-		void TraceEvent(
-			TraceEventFlag eventType,
-			int id,
-			std::string_view message)
-		{
-			if (HasFilter() && ! _filter->ShouldTrace(eventType))
-			{
-				return;
-			}
+  /// <summary>
+  /// Gets or sets a value indicating whether to show or hide the event id
+  /// </summary>
+  bool GetShowEventId() const { return _showEventId; }
+  void SetShowEventId(bool value) { _showEventId = value; }
 
-			// Build up the resulting message with required header/footer
-			auto builder = std::stringstream();
-			WriteHeader(builder, eventType, id);
-			builder << message;
+  /// <summary>
+  /// All other TraceEvent methods come through this one.
+  /// </summary>
+  void TraceEvent(TraceEventFlag eventType, int id, std::string_view message) {
+    if (HasFilter() && !_filter->ShouldTrace(eventType)) {
+      return;
+    }
 
-			bool isEmpty = builder.rdbuf()->in_avail() == 0;
-			if (isEmpty)
-				WriteLine("");
-			else
-				WriteLine(builder.str());
-		}
+    // Build up the resulting message with required header/footer
+    auto builder = std::stringstream();
+    WriteHeader(builder, eventType, id);
+    builder << message;
 
-		template<typename... Args>
-		void TraceEvent(
-			TraceEventFlag eventType,
-			int id,
-			std::string_view message,
-			Args&&... args)
-		{
-			if (HasFilter() && ! _filter->ShouldTrace(eventType))
-			{
-				return;
-			}
+    bool isEmpty = builder.rdbuf()->in_avail() == 0;
+    if (isEmpty)
+      WriteLine("");
+    else
+      WriteLine(builder.str());
+  }
 
-			// Build up the resulting message with required header/footer
-			auto builder = std::stringstream();
-			WriteHeader(builder, eventType, id);
-			builder << std::vformat(message, std::make_format_args(args...));
+  template <typename... Args>
+  void TraceEvent(TraceEventFlag eventType, int id, std::string_view message,
+                  Args &&...args) {
+    if (HasFilter() && !_filter->ShouldTrace(eventType)) {
+      return;
+    }
 
-			bool isEmpty = builder.rdbuf()->in_avail() == 0;
-			if (isEmpty)
-				WriteLine("");
-			else
-				WriteLine(builder.str());
-		}
+    // Build up the resulting message with required header/footer
+    auto builder = std::stringstream();
+    WriteHeader(builder, eventType, id);
+    builder << std::vformat(message, std::make_format_args(args...));
 
-		/// <summary>
-		/// Trace Event
-		/// </summary>
-		// void TraceEvent(
-		//	 string source,
-		//	 TraceEventFlag eventType,
-		//	 int id,
-		//	 string format,
-		//	 params object[] args)
-		// {
-		//	 if (Filter != null && !Filter.ShouldTrace( source, eventType, id, format, args, null, null))
-		//	 {
-		//		 return;
-		//	 }
+    bool isEmpty = builder.rdbuf()->in_avail() == 0;
+    if (isEmpty)
+      WriteLine("");
+    else
+      WriteLine(builder.str());
+  }
 
-		//	 WriteHeader(source, eventType, id);
-		//	 if (args != null)
-		//	 {
-		//		 WriteLine(string.Format(CultureInfo.InvariantCulture, format, args));
-		//	 }
-		//	 else
-		//	 {
-		//		 WriteLine(format);
-		//	 }
-		// }
+  /// <summary>
+  /// Trace Event
+  /// </summary>
+  // void TraceEvent(
+  //	 string source,
+  //	 TraceEventFlag eventType,
+  //	 int id,
+  //	 string format,
+  //	 params object[] args)
+  // {
+  //	 if (Filter != null && !Filter.ShouldTrace( source, eventType, id,
+  // format, args, null, null))
+  //	 {
+  //		 return;
+  //	 }
 
-	private:
-		/// <summary>
-		/// Write the header to the target listener
-		/// </summary>
-		void WriteHeader(
-			std::ostream& stream,
-			TraceEventFlag eventType,
-			int id)
-		{
-			if (GetShowEventType())
-			{
-				switch (eventType)
-				{
-					case TraceEventFlag::HighPriority:
-						stream << "HIGH";
-						break;
-					case TraceEventFlag::Information:
-						stream << "INFO";
-						break;
-					case TraceEventFlag::Diagnostic:
-						stream << "DIAG";
-						break;
-					case TraceEventFlag::Warning:
-						stream << "WARN";
-						break;
-					case TraceEventFlag::Error:
-						stream << "ERRO";
-						break;
-					case TraceEventFlag::Critical: 
-						stream << "CRIT";
-						break;
-					default:
-						stream << "UNKN";
-						break;
-				}
+  //	 WriteHeader(source, eventType, id);
+  //	 if (args != null)
+  //	 {
+  //		 WriteLine(string.Format(CultureInfo.InvariantCulture, format,
+  // args));
+  //	 }
+  //	 else
+  //	 {
+  //		 WriteLine(format);
+  //	 }
+  // }
 
-				stream << ": ";
-			}
+private:
+  /// <summary>
+  /// Write the header to the target listener
+  /// </summary>
+  void WriteHeader(std::ostream &stream, TraceEventFlag eventType, int id) {
+    if (GetShowTimestamp()) {
+      auto now = std::chrono::system_clock::now();
+      stream << std::format("{:%Y-%m-%d %H:%M:%S} ", now);
+    }
 
-			if (GetShowEventId())
-			{
-				stream << std::to_string(id) << ">";
-			}
-		}
+    if (GetShowEventType()) {
+      switch (eventType) {
+      case TraceEventFlag::HighPriority:
+        stream << "HIGH";
+        break;
+      case TraceEventFlag::Information:
+        stream << "INFO";
+        break;
+      case TraceEventFlag::Diagnostic:
+        stream << "DIAG";
+        break;
+      case TraceEventFlag::Warning:
+        stream << "WARN";
+        break;
+      case TraceEventFlag::Error:
+        stream << "ERRO";
+        break;
+      case TraceEventFlag::Critical:
+        stream << "CRIT";
+        break;
+      default:
+        stream << "UNKN";
+        break;
+      }
 
-	private:
-		std::string _name;
-		std::shared_ptr<IEventFilter> _filter;
-		bool _showEventType;
-		bool _showEventId;
-	};
-}
+      stream << ": ";
+    }
+
+    if (GetShowEventId()) {
+      stream << std::to_string(id) << ">";
+    }
+  }
+
+private:
+  std::string _name;
+  std::shared_ptr<IEventFilter> _filter;
+  bool _showEventType;
+  bool _showEventId;
+  bool _showTimestamp;
+};
+} // namespace Opal

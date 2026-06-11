@@ -4,9 +4,9 @@
 #include <array>
 #include <atomic>
 #include <chrono>
-#include <functional>
-#include <fstream>
 #include <filesystem>
+#include <fstream>
+#include <functional>
 #include <iostream>
 #include <locale>
 #include <map>
@@ -14,6 +14,7 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
+
 export module Opal;
 
 // io
@@ -75,5 +76,3 @@ export import :WindowsProcess;
 // utilities
 export import :Path;
 export import :SequenceMap;
-
-#include "utilities/semantic-version.h"
