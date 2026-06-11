@@ -3,6 +3,7 @@
 // </copyright>
 
 module;
+#include <chrono>
 #include <format>
 #include <memory>
 #include <sstream>

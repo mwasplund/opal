@@ -29,6 +29,7 @@ export import :SystemConsoleManager;
 // logger
 export import :ConsoleTraceListener;
 export import :EventTypeFilter;
+export import :FileTraceListener;
 export import :Log;
 export import :ScopedTraceListenerRegister;
 export import :TestTraceListener;
@@ -75,4 +76,5 @@ export import :WindowsProcess;
 
 // utilities
 export import :Path;
+export import :SemanticVersion;
 export import :SequenceMap;

@@ -1,9 +1,14 @@
-// <copyright file="file-trace-listener.h" company="Soup">
+// <copyright file="file-trace-listener.cpp" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
 
-#pragma once
-#include "trace-listener.h"
+module;
+#include <iostream>
+#include <mutex>
+#include <memory>
+export module Opal:FileTraceListener;
+import :TraceListener;
+import :IOutputFile;
 
 namespace Opal {
 /// <summary>
