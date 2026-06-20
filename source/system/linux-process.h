@@ -5,16 +5,11 @@
 #pragma once
 #include "i-process.h"
 
-namespace Opal::System
-{
+namespace Opal::System {
 	/// <summary>
 	/// A Linux platform specific process executable using system
 	/// </summary>
-	#ifdef SOUP_BUILD
-	export
-	#endif
-	class LinuxProcess : public IProcess
-	{
+	export class LinuxProcess : public IProcess {
 	private:
 		// Input
 		Path m_executable;
@@ -24,6 +19,8 @@ namespace Opal::System
 
 		// Runtime
 		pid_t m_processId;
+		int m_stdOutReadHandle;
+		int m_stdErrReadHandle;
 
 		// Result
 		bool m_isFinished;
@@ -36,69 +33,72 @@ namespace Opal::System
 		/// Initializes a new instance of the <see cref='LinuxProcess'/> class.
 		/// </summary>
 		LinuxProcess(
-			const Path& executable,
+			const Path &executable,
 			std::vector<std::string> arguments,
-			const Path& workingDirectory,
-			bool interceptInputOutput) :
-			m_executable(executable),
-			m_arguments(std::move(arguments)),
-			m_workingDirectory(workingDirectory),
-			m_interceptInputOutput(interceptInputOutput),
-			m_isFinished(false),
-			m_exitCode(-1)
-		{
+			const Path &workingDirectory,
+			bool interceptInputOutput)
+			: m_executable(executable),
+			  m_arguments(std::move(arguments)),
+			  m_workingDirectory(workingDirectory),
+			  m_interceptInputOutput(interceptInputOutput),
+			  m_processId(),
+			  m_stdOutReadHandle(),
+			  m_stdErrReadHandle(),
+			  m_isFinished(false),
+			  m_exitCode(-1) {
 		}
 
 		/// <summary>
 		/// Execute a process for the provided
 		/// </summary>
-		void Start() override final
-		{
-			posix_spawn_file_actions_t* fileActions = nullptr;
-			posix_spawnattr_t* attributes = nullptr;
+		void Start() override final {
+			int stdOutPipe[2];
+			int stdErrPipe[2];
+			if (m_interceptInputOutput) {
+				// Create a pipe to send stdout to parent
+				if (pipe2(stdOutPipe, 0) < 0)
+					throw std::runtime_error("Failed to create stdOutPipe");
 
-			std::vector<const char*> arguments;
-			arguments.push_back(m_executable.ToString().c_str());
-			for (auto& argument : m_arguments)
-				arguments.push_back(argument.c_str());
-			arguments.push_back(nullptr);
-
-			// Set current working directory that will be inherited by the child process
-			auto currentWorkingDirectory = std::filesystem::current_path();
-			if (chdir(m_workingDirectory.ToString().c_str()) == -1)
-			{
-				throw std::runtime_error("Failed to set working directory");
+				// Create a pipe to send stderr to parent
+				if (pipe2(stdErrPipe, 0) < 0)
+					throw std::runtime_error("Failed to create stdErrPipe");
 			}
 
-			// Start the process
-			pid_t processId;
-			auto status = posix_spawn(
-				&processId,
-				m_executable.ToString().c_str(),
-				fileActions,
-				attributes,
-				const_cast<char**>(arguments.data()),
-				environ);
+			// Create a child process
+			Log::Diag("Fork");
+			pid_t processId = fork();
+			if (processId == 0) {
+				SetupChildProcess(stdOutPipe, stdErrPipe);
+			} else {
+				// Parent process still
+				Log::Diag("Parent");
 
-			// Reset working directory
-			if (chdir(currentWorkingDirectory.string().c_str()) == -1)
-			{
-				throw std::runtime_error("Failed to reset working directory");
+				m_processId = processId;
+
+				if (m_interceptInputOutput) {
+					// Close our handle on the write end
+					close(stdOutPipe[1]);
+					close(stdErrPipe[1]);
+					m_stdOutReadHandle = stdOutPipe[0];
+					m_stdErrReadHandle = stdErrPipe[0];
+				}
+
+				Log::Diag("Parent done");
 			}
-
-			if (status != 0)
-			{
-				throw std::runtime_error("Execute posix_spawn Failed: " + std::to_string(status));
-			}
-
-			m_processId = processId;
 		}
 
 		/// <summary>
 		/// Wait for the process to exit
 		/// </summary>
-		void WaitForExit() override final
-		{
+		void WaitForExit() override final {
+			if (m_interceptInputOutput) {
+				ReadAvailableStdOut();
+				close(m_stdOutReadHandle);
+
+				ReadAvailableStdErr();
+				close(m_stdErrReadHandle);
+			}
+
 			// Wait until child process exits.
 			int status;
 			auto waitResult = waitpid(m_processId, &status, 0);
@@ -114,8 +114,7 @@ namespace Opal::System
 		/// <summary>
 		/// Get the exit code
 		/// </summary>
-		int GetExitCode() override final
-		{
+		int GetExitCode() override final {
 			if (!m_isFinished)
 				throw std::runtime_error("Process has not finished.");
 			return m_exitCode;
@@ -124,8 +123,7 @@ namespace Opal::System
 		/// <summary>
 		/// Get the standard output
 		/// </summary>
-		std::string GetStandardOutput() override final
-		{
+		std::string GetStandardOutput() override final {
 			if (!m_isFinished)
 				throw std::runtime_error("Process has not finished.");
 			return m_stdOut.str();
@@ -134,11 +132,96 @@ namespace Opal::System
 		/// <summary>
 		/// Get the standard error output
 		/// </summary>
-		std::string GetStandardError() override final
-		{
+		std::string GetStandardError() override final {
 			if (!m_isFinished)
 				throw std::runtime_error("Process has not finished.");
 			return m_stdErr.str();
+		}
+
+	private:
+		void ReadAvailableStdOut() {
+			// Read all and write to stdout
+			int dwRead;
+			const int BufferSize = 256;
+			char buffer[BufferSize + 1];
+
+			// Read on output
+			while (true) {
+				dwRead = read(m_stdOutReadHandle, buffer, BufferSize);
+				if (dwRead < 0)
+					break;
+				if (dwRead == 0)
+					break;
+
+				m_stdOut << std::string_view(buffer, dwRead);
+			}
+		}
+
+		void ReadAvailableStdErr() {
+			// Read all and write to stdout
+			int dwRead;
+			const int BufferSize = 256;
+			char buffer[BufferSize + 1];
+
+			// Read all errors
+			while (true) {
+				dwRead = read(m_stdErrReadHandle, buffer, BufferSize);
+				if (dwRead < 0)
+					break;
+				if (dwRead == 0)
+					break;
+
+				// Make the string null terminated
+				m_stdErr << std::string_view(buffer, dwRead);
+			}
+		}
+
+		void SetupChildProcess(int stdOutPipe[2], int stdErrPipe[2]) {
+			try {
+				// We are the child process
+				Log::Diag("Child");
+
+				if (m_interceptInputOutput) {
+					// Close the read pipe
+					close(stdOutPipe[0]);
+					close(stdErrPipe[0]);
+
+					// Redirect stdout to the pipe write
+					if (dup2(stdOutPipe[1], STDOUT_FILENO) != STDOUT_FILENO)
+						throw std::runtime_error("dup2 error to stdout");
+
+					// Redirect stderr to the pipe write
+					if (dup2(stdErrPipe[1], STDERR_FILENO) != STDERR_FILENO)
+						throw std::runtime_error("dup2 error to stderr");
+
+					// Close our handle on the write end
+					close(stdOutPipe[1]);
+					close(stdErrPipe[1]);
+				}
+
+				// Set current working directory that will be inherited by the child process
+				if (chdir(m_workingDirectory.ToString().c_str()) == -1)
+					throw std::runtime_error("Failed to set working directory");
+
+				std::vector<const char*> arguments;
+				arguments.push_back(m_executable.ToString().c_str());
+				for (auto& argument : m_arguments)
+					arguments.push_back(argument.c_str());
+				arguments.push_back(nullptr);
+				
+				// Replace runtime with child program
+				auto result = execve(
+					m_executable.ToString().c_str(),
+					const_cast<char **>(arguments.data()),
+					environ);
+				if (result == -1)
+					throw std::runtime_error("Failed to start child");
+			} catch (const std::exception &e) {
+				std::cerr << e.what() << '\n';
+				exit(1234);
+			}
+
+			// Running in other program now
 		}
 	};
 }
