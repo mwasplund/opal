@@ -21,6 +21,7 @@ namespace Opal
 	private:
 		static constexpr char DirectorySeparator = '/';
 		static constexpr char AlternateDirectorySeparator = '\\';
+		static constexpr std::string_view PortableDirectorySeparators = "/";
 		static constexpr std::string_view AllValidDirectorySeparators = "/\\";
 		static constexpr char LetterDriveSpecifier = ':';
 		static constexpr char FileExtensionSeparator = '.';
@@ -31,26 +32,29 @@ namespace Opal
 		static Path Parse(std::string_view value)
 		{
 			auto result = Path();
-
-			result.ParsePath(value);
-
+			result.ParsePath(value, PortableDirectorySeparators);
 			return result;
 		}
 
-		static Path CreateWindows(const char* value)
+		static Path ParseRelaxed(std::string_view value)
 		{
-			return CreateWindows(std::string(value));
+			auto result = Path();
+			result.ParsePath(value, AllValidDirectorySeparators);
+			return result;
 		}
 
-		static Path CreateWindows(std::string_view value)
+		static Path ParseWindows(std::string_view value)
 		{
-			return CreateWindows(std::string(value));
-		}
+			auto result = Path();
 
-		static Path CreateWindows(std::string&& value)
-		{
-			std::replace(value.begin(), value.end(), AlternateDirectorySeparator, DirectorySeparator);
-			return Path(std::move(value));
+			if (value.starts_with("\\\\?\\") || 
+				value.starts_with("\\\\.\\")) {
+				result.ParsePath(value.substr(4), AllValidDirectorySeparators);
+			} else {
+				result.ParsePath(value, AllValidDirectorySeparators);
+			}
+
+			return result;
 		}
 
 	private:
@@ -63,7 +67,7 @@ namespace Opal
 		/// Initializes a new instance of the <see cref="Path"/> class.
 		/// </summary>
 		Path() :
-			_value("./"),
+			_value("."),
 			_rootEndLocation(-1),
 			_fileNameStartLocation(2)
 		{
@@ -99,7 +103,7 @@ namespace Opal
 		/// </summary>
 		bool IsEmpty() const
 		{
-			return _value == "./";
+			return _value == ".";
 		}
 
 		/// <summary>
@@ -386,7 +390,12 @@ namespace Opal
 					std::format("Cannot combine a rooted path on the right hand side: {}", rhs.ToString()));
 			}
 
-			if (!rhs._value.starts_with(".."))
+			if (rhs.IsEmpty())
+			{
+				// Nothing to do
+				return Path(_value);
+			}
+			else if (!rhs._value.starts_with(".."))
 			{
 				// Simple relative directory can use fast string concatenation
 				auto combineValue = std::string(_value);
@@ -451,44 +460,58 @@ namespace Opal
 			#ifdef _DEBUG
 			auto firstAlternateDirectory = _value.find_first_of(AlternateDirectorySeparator);
 			if (firstAlternateDirectory != std::string::npos)
-				throw std::runtime_error("Debug check for windows ridiculous directory separator");
+				throw std::runtime_error(std::format("Debug check for windows ridiculous directory separator {}", _value));
 			#endif
 
 			auto firstSeparator = _value.find_first_of(DirectorySeparator);
 			if (firstSeparator == std::string::npos)
 			{
-				throw std::runtime_error("A path must have a directory separator");
+				// Special case for empty relative paths
+				if (IsRelativeDirectory(_value))
+				{
+					// Relative path with no filename
+					_rootEndLocation = -1;
+					_fileNameStartLocation = _value.size();
+				}
+				else
+				{
+					throw std::runtime_error("A path must have a directory separator");
+				}
 			}
+			else 
+			{
+				auto root = std::string_view(_value.c_str(), firstSeparator);
+				if (IsRoot(root))
+				{
+					// Absolute path
+					_rootEndLocation = (int)firstSeparator;
+				}
+				else if (root == RelativeDirectory || root == RelativeParentDirectory)
+				{
+					// Relative path
+					_rootEndLocation = -1;
+				}
+				else
+				{
+					throw std::runtime_error(std::format("Unknown directory root {}", root));
+				}
 
-			auto root = std::string_view(_value.c_str(), firstSeparator);
-			if (IsRoot(root))
-			{
-				// Absolute path
-				_rootEndLocation = (int)firstSeparator;
-			}
-			else if (root == RelativeDirectory || root == RelativeParentDirectory)
-			{
-				// Relative path
-				_rootEndLocation = -1;
-			}
-			else
-			{
-				throw std::runtime_error(std::format("Unknown directory root {}", root));
-			}
-
-			// Check if has file name
-			auto lastSeparator = _value.find_last_of(DirectorySeparator);
-			if (lastSeparator != std::string::npos && lastSeparator != _value.size() - 1)
-			{
-				_fileNameStartLocation = lastSeparator + 1;
-			}
-			else
-			{
-				_fileNameStartLocation = _value.size();
+				// Check if has file name
+				auto lastSeparator = _value.find_last_of(DirectorySeparator);
+				if (lastSeparator != std::string::npos && lastSeparator != _value.size() - 1)
+				{
+					_fileNameStartLocation = lastSeparator + 1;
+				}
+				else
+				{
+					_fileNameStartLocation = _value.size();
+				}
 			}
 		}
 
-		void ParsePath(std::string_view value)
+		void ParsePath(
+			std::string_view value,
+			std::string_view separators)
 		{
 			// Break out the individual components of the path
 			std::vector<std::string_view> directories;
@@ -496,6 +519,7 @@ namespace Opal
 			std::optional<std::string_view> fileName;
 			DecomposeRawPathString(
 				value,
+				separators,
 				directories,
 				root,
 				fileName);
@@ -513,6 +537,7 @@ namespace Opal
 
 		void DecomposeRawPathString(
 			std::string_view value,
+			std::string_view separators,
 			std::vector<std::string_view>& directories,
 			std::optional<std::string_view>& root,
 			std::optional<std::string_view>& fileName)
@@ -520,7 +545,7 @@ namespace Opal
 			size_t current = 0;
 			size_t next = 0;
 			bool isFirst = true;
-			while ((next = value.find_first_of(AllValidDirectorySeparators, current)) != std::string::npos)
+			while ((next = value.find_first_of(separators, current)) != std::string::npos)
 			{
 				auto directory = value.substr(current, next - current);
 
@@ -582,6 +607,11 @@ namespace Opal
 
 					isFirst = false;
 				}
+				else if (IsRelativeDirectory(directory))
+				{
+					// Relative directories do not require an end separator
+					directories.push_back(directory);
+				}
 				else
 				{
 					fileName = directory;
@@ -595,7 +625,7 @@ namespace Opal
 			}
 		}
 
-		bool IsRelativeDirectory(const std::string_view directory)
+		bool IsRelativeDirectory(std::string_view directory) const
 		{
 			return directory == RelativeDirectory || directory == RelativeParentDirectory;
 		}
@@ -616,10 +646,18 @@ namespace Opal
 				current = next + 1;
 			}
 
-			// Ensure the last separator was at the end of the string
+			// Ensure the last separator was at the end of the string or was a special folder
 			if (current != value.size())
 			{
-				throw std::runtime_error("The directories string must end in a separator");
+				auto directory = value.substr(current);
+				if (IsRelativeDirectory(directory))
+				{
+					directories.push_back(directory);
+				}
+				else
+				{
+					throw std::runtime_error("The directories string must end in a separator");
+				}
 			}
 
 			return directories;
@@ -712,7 +750,15 @@ namespace Opal
 
 			for (size_t i = 0; i < directories.size(); i++)
 			{
-				stringBuilder << directories[i] << DirectorySeparator;
+				stringBuilder << directories[i];
+
+				// Do not add the separator for special relative directory at the end of the path
+				if (i + 1 < directories.size() ||
+					fileName.has_value() ||
+					!IsRelativeDirectory(directories[i]))
+				{
+					stringBuilder << DirectorySeparator;
+				}
 			}
 
 			if (fileName.has_value())

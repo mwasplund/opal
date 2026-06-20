@@ -17,8 +17,8 @@ namespace Soup::UnitTests
 			Assert::IsFalse(uut.HasFileName(), "Verify has no filename.");
 			Assert::IsFalse(uut.HasFileStem(), "Verify has no file stem.");
 			Assert::IsFalse(uut.HasFileExtension(), "Verify has no file extension.");
-			Assert::AreEqual("./", uut.ToString(), "Verify string value matches.");
-			Assert::AreEqual(".\\", uut.ToAlternateString(), "Verify alternate string value matches.");
+			Assert::AreEqual(".", uut.ToString(), "Verify string value matches.");
+			Assert::AreEqual(".", uut.ToAlternateString(), "Verify alternate string value matches.");
 		}
 
 		// [[Fact]]
@@ -34,25 +34,25 @@ namespace Soup::UnitTests
 		// [[Fact]]
 		void Initialize_RelativePath_Simple()
 		{
-			auto uut = Path("./");
+			auto uut = Path(".");
 			Assert::IsFalse(uut.HasRoot(), "Verify is no root.");
 			Assert::IsFalse(uut.HasFileName(), "Verify has filename.");
 			Assert::IsFalse(uut.HasFileStem(), "Verify has file stem.");
 			Assert::IsFalse(uut.HasFileExtension(), "Verify has file extension.");
-			Assert::AreEqual("./", uut.ToString(), "Verify string value matches.");
-			Assert::AreEqual(".\\", uut.ToAlternateString(), "Verify alternate string value matches.");
+			Assert::AreEqual(".", uut.ToString(), "Verify string value matches.");
+			Assert::AreEqual(".", uut.ToAlternateString(), "Verify alternate string value matches.");
 		}
 
 		// [[Fact]]
 		void Initialize_RelativePath_Parent()
 		{
-			auto uut = Path("../");
+			auto uut = Path("..");
 			Assert::IsFalse(uut.HasRoot(), "Verify is no root.");
 			Assert::IsFalse(uut.HasFileName(), "Verify has filename.");
 			Assert::IsFalse(uut.HasFileStem(), "Verify has file stem.");
 			Assert::IsFalse(uut.HasFileExtension(), "Verify has file extension.");
-			Assert::AreEqual("../", uut.ToString(), "Verify string value matches.");
-			Assert::AreEqual("..\\", uut.ToAlternateString(), "Verify alternate string value matches.");
+			Assert::AreEqual("..", uut.ToString(), "Verify string value matches.");
+			Assert::AreEqual("..", uut.ToAlternateString(), "Verify alternate string value matches.");
 		}
 
 		// [[Fact]]
@@ -114,7 +114,7 @@ namespace Soup::UnitTests
 		// [[Fact]]
 		void Parse_AlternativeDirectoriesPath()
 		{
-			auto uut = Path::Parse("C:\\myfolder/anotherfolder\\file.txt");
+			auto uut = Path::ParseRelaxed("C:\\myfolder/anotherfolder\\file.txt");
 			Assert::IsTrue(uut.HasRoot(), "Verify is root.");
 			Assert::AreEqual("C:", uut.GetRoot(), "Verify root matches.");
 			Assert::IsTrue(uut.HasFileName(), "Verify has filename.");
@@ -126,224 +126,118 @@ namespace Soup::UnitTests
 			Assert::AreEqual("C:/myfolder/anotherfolder/file.txt", uut.ToString(), "Verify string value matches.");
 		}
 
-		// [[Fact]]
-		void Parse_RemoveEmptyDirectoryInside()
+		// [[Theory]]
+		// [[InlineData("C:/myfolder//file.txt", "C:/myfolder/file.txt", true, true)]]
+		// [[InlineData("C:/myfolder/../file.txt", "C:/file.txt", true, true)]]
+		// [[InlineData("C:/myfolder/myfolder2/../../file.txt", "C:/file.txt", true, true)]]
+		// [[InlineData("C:/myfolder/myfolder2/", "C:/myfolder/myfolder2/", true, false)]]
+		// [[InlineData("../file.txt", "../file.txt", false, true)]]
+		// [[InlineData("./file.txt", "./file.txt", false, true)]]
+		// [[InlineData("./", ".", false, false)]]
+		// [[InlineData(".", ".", false, false)]]
+		// [[InlineData("../", "..", false, false)]]
+		// [[InlineData("..", "..", false, false)]]
+		// [[InlineData("../../", "../..", false, false)]]
+		// [[InlineData("../..", "../..", false, false)]]
+		void Parse(std::string_view input, std::string_view expected, bool hasRoot, bool hasFileName)
 		{
-			auto uut = Path::Parse("C:/myfolder//file.txt");
-			Assert::AreEqual("C:/myfolder/file.txt", uut.ToString(), "Verify string value matches.");
+			auto uut = Path::Parse(input);
+			Assert::AreEqual(expected, uut.ToString(), "Verify string value matches.");
+			Assert::AreEqual(uut.HasRoot(), hasRoot, "Verify is root.");
+			Assert::AreEqual(uut.HasFileName(), hasFileName, "Verify has filename.");
 		}
 
-		// [[Fact]]
-		void Parse_RemoveParentDirectoryInside()
+		// [[Theory]]
+		// [[InlineData("C:/myfolder//file.txt", "C:/myfolder/file.txt", true, true)]]
+		// [[InlineData("C:/myfolder/../file.txt", "C:/file.txt", true, true)]]
+		// [[InlineData("C:/myfolder/myfolder2/../../file.txt", "C:/file.txt", true, true)]]
+		// [[InlineData("C:/myfolder/myfolder2/", "C:/myfolder/myfolder2/", true, false)]]
+		// [[InlineData("../file.txt", "../file.txt", false, true)]]
+		// [[InlineData("./file.txt", "./file.txt", false, true)]]
+		// [[InlineData(".\\../file.txt", "../file.txt", false, true)]]
+		// [[InlineData("./", ".", false, false)]]
+		// [[InlineData(".", ".", false, false)]]
+		// [[InlineData("../", "..", false, false)]]
+		// [[InlineData("..", "..", false, false)]]
+		// [[InlineData("../..\\", "../..", false, false)]]
+		// [[InlineData("../..", "../..", false, false)]]
+		void ParseRelaxed(std::string_view input, std::string_view expected, bool hasRoot, bool hasFileName)
 		{
-			auto uut = Path::Parse("C:/myfolder/../file.txt");
-			Assert::AreEqual("C:/file.txt", uut.ToString(), "Verify string value matches.");
+			auto uut = Path::ParseRelaxed(input);
+			Assert::AreEqual(expected, uut.ToString(), "Verify string value matches.");
+			Assert::AreEqual(uut.HasRoot(), hasRoot, "Verify is root.");
+			Assert::AreEqual(uut.HasFileName(), hasFileName, "Verify has filename.");
 		}
 
-		// [[Fact]]
-		void Parse_RemoveTwoParentDirectoryInside()
+		// [[Theory]]
+		// [[InlineData("C:\\myfolder\\file.txt", "C:/myfolder/file.txt", true, true)]]
+		// [[InlineData("C:\\myfolder\\..\\file.txt", "C:/file.txt", true, true)]]
+		// [[InlineData("C:\\myfolder\\myfolder2\\..\\..\\file.txt", "C:/file.txt", true, true)]]
+		// [[InlineData("C:\\myfolder\\myfolder2\\", "C:/myfolder/myfolder2/", true, false)]]
+		// [[InlineData("..\\file.txt", "../file.txt", false, true)]]
+		// [[InlineData(".\\file.txt", "./file.txt", false, true)]]
+		// [[InlineData(".\\..\\file.txt", "../file.txt", false, true)]]
+		// [[InlineData(".\\", ".", false, false)]]
+		// [[InlineData(".", ".", false, false)]]
+		// [[InlineData("..\\", "..", false, false)]]
+		// [[InlineData("..", "..", false, false)]]
+		// [[InlineData("..\\..\\", "../..", false, false)]]
+		// [[InlineData("..\\..", "../..", false, false)]]
+		// [[InlineData("\\\\?\\C:\\myfolder\\file.txt", "C:/myfolder/file.txt", true, true)]]
+		// [[InlineData("\\\\.\\C:\\myfolder\\file.txt", "C:/myfolder/file.txt", true, true)]]
+		void ParseWindows(std::string_view input, std::string_view expected, bool hasRoot, bool hasFileName)
 		{
-			auto uut = Path::Parse("C:/myfolder/myfolder2/../../file.txt");
-			Assert::AreEqual("C:/file.txt", uut.ToString(), "Verify string value matches.");
+			auto uut = Path::ParseWindows(input);
+			Assert::AreEqual(expected, uut.ToString(), "Verify string value matches.");
+			Assert::AreEqual(uut.HasRoot(), hasRoot, "Verify is root.");
+			Assert::AreEqual(uut.HasFileName(), hasFileName, "Verify has filename.");
 		}
 
-		// [[Fact]]
-		void Parse_LeaveParentDirectoryAtStart()
+		// [[Theory]]
+		// [[InlineData("C:/MyRootFolder/", "./MyFolder/MyFile.txt", "C:/MyRootFolder/MyFolder/MyFile.txt")]]
+		// [[InlineData("C:/MyRootFolder/", "./MyFolder/", "C:/MyRootFolder/MyFolder/")]]
+		// [[InlineData("C:/MyRootFolder/", ".", "C:/MyRootFolder/")]]
+		// [[InlineData("C:/", "./MyFile.txt", "C:/MyFile.txt")]]
+		// [[InlineData("C:/", "./MyFolder/", "C:/MyFolder/")]]
+		// [[InlineData("C:/MyRootFolder/", "../NewRoot/MyFile.txt", "C:/NewRoot/MyFile.txt")]]
+		// [[InlineData("./Folder1/", "./Other/MyFile.txt", "./Folder1/Other/MyFile.txt")]]
+		// [[InlineData("../MyRootFolder/", "../NewRoot/MyFile.txt", "../NewRoot/MyFile.txt")]]
+		void Concatenate(std::string_view lhs, std::string_view rhs, std::string_view expected)
 		{
-			auto uut = Path::Parse("../file.txt");
-			Assert::AreEqual("../file.txt", uut.ToString(), "Verify string value matches.");
-		}
-
-		// [[Fact]]
-		void Parse_CurrentDirectoryAtStart()
-		{
-			auto uut = Path::Parse("./file.txt");
-			Assert::AreEqual("./file.txt", uut.ToString(), "Verify string value matches.");
-		}
-
-		// [[Fact]]
-		void Parse_CurrentDirectoryAtStartAlternate()
-		{
-			auto uut = Path::Parse(".\\../file.txt");
-			Assert::AreEqual("../file.txt", uut.ToString(), "Verify string value matches.");
-		}
-
-		// [[Fact]]
-		void Parse_RelativeOnly()
-		{
-			auto uut = Path::Parse(".");
-			Assert::AreEqual("./", uut.ToString(), "Verify string value matches.");
-		}
-
-		// [[Fact]]
-		void Parse_UpOnly()
-		{
-			auto uut = Path::Parse("..");
-			Assert::AreEqual("../", uut.ToString(), "Verify string value matches.");
-		}
-
-		// [[Fact]]
-		void Concatenate_Simple()
-		{
-			auto path1 = Path("C:/MyRootFolder/");
-			auto path2 = Path("./MyFolder/MyFile.txt");
+			auto path1 = Path(lhs);
+			auto path2 = Path(rhs);
 			auto uut = path1 + path2;
 
-			Assert::AreEqual("C:/MyRootFolder/MyFolder/MyFile.txt", uut.ToString(), "Verify value matches.");
+			Assert::AreEqual(expected, uut.ToString(), "Verify value matches.");
 		}
 
-		// [[Fact]]
-		void Concatenate_Empty()
+		// [[Theory]]
+		// [[InlineData("../MyFile.txt", "awe", "../MyFile.awe")]]
+		// [[InlineData("C:/MyFolder/MyFile.txt", "awe", "C:/MyFolder/MyFile.awe")]]
+		// [[InlineData("../MyFile", "awe", "../MyFile.awe")]]
+		void SetFileExtension(std::string_view file, std::string_view extension, std::string_view expected)
 		{
-			auto path1 = Path("C:/MyRootFolder/");
-			auto path2 = Path();
-			auto uut = path1 + path2;
+			auto uut = Path(file);
+			uut.SetFileExtension(extension);
 
-			// Changes the assumed file into a folder
-			Assert::AreEqual("C:/MyRootFolder/", uut.ToString(), "Verify value matches.");
+			Assert::AreEqual(expected, uut.ToString(), "Verify value matches.");
 		}
 
-		// [[Fact]]
-		void Concatenate_RootFile()
+		// [[Theory]]
+		// [[InlineData("./File.txt", ".", "./File.txt")]]
+		// [[InlineData("./Folder/File.txt", "./Folder/", "./File.txt")]]
+		// [[InlineData("../Folder/Target", "../Folder/", "./Target")]]
+		// [[InlineData("./Folder1/File.txt", "./Folder2/", "../Folder1/File.txt")]]
+		// [[InlineData("C:/Folder1/File.txt", "D:/Folder1/", "C:/Folder1/File.txt")]]
+		// [[InlineData("C:/Folder1/File.txt", "C:/Folder1/", "./File.txt")]]
+		void GetRelativeTo(std::string_view path, std::string_view base, std::string_view expected)
 		{
-			auto path1 = Path("C:/");
-			auto path2 = Path("./MyFile.txt");
-			auto uut = path1 + path2;
+			auto uut = Path(path);
+			auto basePath = Path(base);
 
-			Assert::AreEqual("C:/MyFile.txt", uut.ToString(), "Verify value matches.");
-		}
+			auto result = uut.GetRelativeTo(basePath);
 
-		// [[Fact]]
-		void Concatenate_RootFolder()
-		{
-			auto path1 = Path("C:/");
-			auto path2 = Path("./MyFolder/");
-			auto uut = path1 + path2;
-
-			Assert::AreEqual("C:/MyFolder/", uut.ToString(), "Verify value matches.");
-		}
-	
-		// [[Fact]]
-		void Concatenate_UpDirectory()
-		{
-			auto path1 = Path("C:/MyRootFolder/");
-			auto path2 = Path("../NewRoot/MyFile.txt");
-			auto uut = path1 + path2;
-
-			Assert::AreEqual("C:/NewRoot/MyFile.txt", uut.ToString(), "Verify value matches.");
-		}
-
-		// [[Fact]]
-		void Concatenate_TwoRelative()
-		{
-			auto path1 = Path("./Folder1/");
-			auto path2 = Path("./Other/MyFile.txt");
-			auto uut = path1 + path2;
-
-			Assert::AreEqual("./Folder1/Other/MyFile.txt", uut.ToString(), "Verify value matches.");
-		}
-
-		// [[Fact]]
-		void Concatenate_UpDirectoryBeginning()
-		{
-			auto path1 = Path("../MyRootFolder/");
-			auto path2 = Path("../NewRoot/MyFile.txt");
-			auto uut = path1 + path2;
-
-			Assert::AreEqual("../NewRoot/MyFile.txt", uut.ToString(), "Verify value matches.");
-		}
-
-		// [[Fact]]
-		void SetFileExtension_Replace()
-		{
-			auto uut = Path("../MyFile.txt");
-			uut.SetFileExtension("awe");
-
-			Assert::AreEqual("../MyFile.awe", uut.ToString(), "Verify value matches.");
-		}
-
-		// [[Fact]]
-		void SetFileExtension_Replace_Rooted()
-		{
-			auto uut = Path("C:/MyFolder/MyFile.txt");
-			uut.SetFileExtension("awe");
-
-			Assert::AreEqual("C:/MyFolder/MyFile.awe", uut.ToString(), "Verify value matches.");
-		}
-
-		// [[Fact]]
-		void SetFileExtension_Add()
-		{
-			auto uut = Path("../MyFile");
-			uut.SetFileExtension("awe");
-
-			Assert::AreEqual("../MyFile.awe", uut.ToString(), "Verify value matches.");
-		}
-
-		// [[Fact]]
-		void GetRelativeTo_Empty()
-		{
-			auto uut = Path("./File.txt");
-			auto base = Path();
-
-			auto result = uut.GetRelativeTo(base);
-
-			Assert::AreEqual("./File.txt", result.ToString(), "Verify result matches.");
-		}
-
-		// [[Fact]]
-		void GetRelativeTo_SingleRelative()
-		{
-			auto uut = Path("./Folder/File.txt");
-			auto base = Path("./Folder/");
-
-			auto result = uut.GetRelativeTo(base);
-
-			Assert::AreEqual("./File.txt", result.ToString(), "Verify result matches.");
-		}
-
-		// [[Fact]]
-		void GetRelativeTo_UpParentRelative()
-		{
-			auto uut = Path("../Folder/Target");
-			auto base = Path("../Folder/");
-
-			auto result = uut.GetRelativeTo(base);
-
-			Assert::AreEqual("./Target", result.ToString(), "Verify result matches.");
-		}
-
-		// [[Fact]]
-		void GetRelativeTo_MismatchRelative()
-		{
-			auto uut = Path("./Folder1/File.txt");
-			auto base = Path("./Folder2/");
-
-			auto result = uut.GetRelativeTo(base);
-
-			Assert::AreEqual("../Folder1/File.txt", result.ToString(), "Verify result matches.");
-		}
-
-		// [[Fact]]
-		void GetRelativeTo_Rooted_DifferentRoot()
-		{
-			auto uut = Path("C:/Folder1/File.txt");
-			auto base = Path("D:/Folder2/");
-
-			auto result = uut.GetRelativeTo(base);
-
-			Assert::AreEqual("C:/Folder1/File.txt", result.ToString(), "Verify result matches.");
-		}
-
-		// [[Fact]]
-		void GetRelativeTo_Rooted_SingleFolder()
-		{
-			auto uut = Path("C:/Folder1/File.txt");
-			auto base = Path("C:/Folder1/");
-
-			auto result = uut.GetRelativeTo(base);
-
-			Assert::AreEqual("./File.txt", result.ToString(), "Verify result matches.");
+			Assert::AreEqual(expected, result.ToString(), "Verify result matches.");
 		}
 	};
 }
