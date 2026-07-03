@@ -56,7 +56,7 @@ namespace Opal::System
 				auto userProfileLength = strlen(buffer.data());
 				buffer[userProfileLength] = '\\';
 				buffer[userProfileLength + 1] = '\0';
-				return Path::CreateWindows(std::string(buffer.data(), userProfileLength + 1));
+				return Path::ParseWindows(std::string(buffer.data(), userProfileLength + 1));
 			#elif defined(__linux__)
 				return Path(std::getenv("HOME") + std::string("/"));
 			#else
@@ -70,7 +70,7 @@ namespace Opal::System
 		Path GetCurrentDirectory() override final
 		{
 			auto current = std::filesystem::current_path();
-			return Path::CreateWindows(std::format("{}/", current.string()));
+			return Path::ParseRelaxed(std::format("{}/", current.string()));
 		}
 
 		/// <summary>
