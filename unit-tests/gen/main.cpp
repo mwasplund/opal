@@ -17,6 +17,7 @@ using namespace Opal::System;
 using namespace Soup::Test;
 
 #include "utils/path-tests.gen.h"
+#include "utils/path-set-tests.gen.h"
 #include "utils/semantic-version-tests.gen.h"
 
 int main()
@@ -26,6 +27,7 @@ int main()
 	TestState state = { 0, 0 };
 
 	state += RunPathTests();
+	state += RunPathSetTests();
 	state += RunSemanticVersionTests();
 
 	// Touch stamp file to ensure incremental builds work

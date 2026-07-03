@@ -47,6 +47,7 @@ export import :SequenceMap;
 #define OPAL_IMPLEMENTATION
 
 #include "utilities/path.h"
+#include "utilities/path-set.h"
 #include "utilities/semantic-version.h"
 
 #include "io/mock-console-manager.h"
