@@ -14,17 +14,21 @@ namespace Opal
 		struct DirectoryEntry
 		{
 			DirectoryEntry(std::string_view entry) :
+				InSet(false),
 				Entry(entry),
 				Children()
 			{
 			}
 
-			DirectoryEntry(std::string&& entry, std::list<DirectoryEntry>&& children) :
+			DirectoryEntry(bool inSet, std::string&& entry, std::list<DirectoryEntry>&& children) :
+				InSet(inSet),
 				Entry(std::move(entry)),
 				Children(std::move(children))
 			{
 			}
 
+			// A value that lets us know if the entry was in the original set
+			bool InSet;
 			std::string Entry;
 			std::list<DirectoryEntry> Children;
 		};
@@ -75,6 +79,9 @@ namespace Opal
 				{
 					throw std::runtime_error("TODO");
 				}
+
+				// Mark the current directory as a leaf node
+				currentDirectory->InSet = true;
 			}
 
 			return PathSet(std::move(root));
@@ -117,21 +124,43 @@ namespace Opal
 
 		std::vector<Path> GetPaths() const {
 			auto result = std::vector<Path>();
+			for (auto& entry : _root) {
+				auto fullPath = Path(entry.Entry + "/");
+				BuildPaths(result, fullPath, entry.Children);
+				if (entry.InSet) {
+					result.push_back(std::move(fullPath));
+				}
+			}
+
 			return result;
 		}
 
 	private:
+		static void BuildPaths(
+			std::vector<Path>& result,
+			const Path& parent,
+			const std::list<DirectoryEntry>& entries) {
+			for (auto& entry : entries) {
+				auto fullPath = parent + Path("./" + entry.Entry + "/");
+				BuildPaths(result, fullPath, entry.Children);
+				if (entry.InSet) {
+					result.push_back(std::move(fullPath));
+				}
+			}
+		}
+
 		static std::list<DirectoryEntry> ReadChildren(char *data, size_t size, size_t &offset) {
 			// Read the list size
 			auto listSize = ReadUInt32(data, size, offset);
 
 			auto result = std::list<DirectoryEntry>();
 			for (auto i = 0u; i < listSize; i++) {
+				auto inSet = ReadBoolean(data, size, offset);
 				auto entry = ReadString(data, size, offset);
 				auto children = ReadChildren(data, size, offset);
 
 				result.push_back(
-					DirectoryEntry(std::move(entry), std::move(children)));
+					DirectoryEntry(inSet, std::move(entry), std::move(children)));
 			}
 
 			return result;
@@ -142,6 +171,13 @@ namespace Opal
 			Read(data, size, offset, reinterpret_cast<char *>(&result), sizeof(uint32_t));
 
 			return result;
+		}
+
+		static bool ReadBoolean(char *data, size_t size, size_t &offset) {
+			uint32_t result = 0;
+			Read(data, size, offset, reinterpret_cast<char *>(&result), sizeof(uint32_t));
+
+			return result != 0;
 		}
 
 		static std::string ReadString(char *data, size_t size, size_t &offset) {
@@ -163,6 +199,7 @@ namespace Opal
 			WriteValue(stream, (uint32_t)children.size());
 			for (auto& entry : children)
 			{
+				WriteValue(stream, entry.InSet);
 				WriteValue(stream, entry.Entry);
 				WriteChildren(stream, entry.Children);
 			}
@@ -170,6 +207,11 @@ namespace Opal
 
 		static void WriteValue(std::ostream &stream, uint32_t value) {
 			stream.write(reinterpret_cast<char *>(&value), sizeof(uint32_t));
+		}
+
+		static void WriteValue(std::ostream &stream, bool value) {
+			uint32_t integerValue = value ? 1u : 0u;
+			stream.write(reinterpret_cast<char *>(&integerValue), sizeof(uint32_t));
 		}
 
 		static void WriteValue(std::ostream &stream, std::string_view value) {
