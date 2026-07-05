@@ -95,7 +95,7 @@ namespace Opal
 			return PathSet(std::move(root));
 		}
 
-		static PathSet Deserialize(char *data, size_t size)
+		static PathSet Deserialize(const char *data, size_t size)
 		{
 			size_t offset = 0;
 			auto root = ReadChildren(data, size, offset);
@@ -158,7 +158,7 @@ namespace Opal
 			}
 		}
 
-		static std::list<DirectoryEntry> ReadChildren(char *data, size_t size, size_t &offset) {
+		static std::list<DirectoryEntry> ReadChildren(const char *data, size_t size, size_t &offset) {
 			// Read the list size
 			auto listSize = ReadVarInt(data, size, offset);
 
@@ -178,7 +178,7 @@ namespace Opal
 			return result;
 		}
 
-		static size_t ReadVarInt(char *data, size_t size, size_t &offset) {
+		static size_t ReadVarInt(const char *data, size_t size, size_t &offset) {
 			size_t result = 0;
 			for (auto i = 0; true; i++) {
 				uint8_t currentValue = 0;
@@ -192,7 +192,7 @@ namespace Opal
 			return result;
 		}
 
-		static std::pair<bool, bool> ReadFlags(char *data, size_t size, size_t &offset) {
+		static std::pair<bool, bool> ReadFlags(const char *data, size_t size, size_t &offset) {
 			uint8_t result = 0;
 			Read(data, size, offset, reinterpret_cast<char *>(&result), sizeof(uint8_t));
 
@@ -202,7 +202,7 @@ namespace Opal
 			return std::make_pair(result1, result2);
 		}
 
-		static std::string ReadString(char *data, size_t size, size_t &offset) {
+		static std::string ReadString(const char *data, size_t size, size_t &offset) {
 			auto stringLength = ReadVarInt(data, size, offset);
 			auto result = std::string(stringLength, '\0');
 			Read(data, size, offset, result.data(), stringLength);
@@ -210,7 +210,7 @@ namespace Opal
 			return result;
 		}
 
-		static void Read(char *data, size_t size, size_t &offset, char *buffer, size_t count) {
+		static void Read(const char *data, size_t size, size_t &offset, char *buffer, size_t count) {
 			if (offset + count > size)
 				throw std::runtime_error("Tried to read past end of data");
 			memcpy(buffer, data + offset, count);
