@@ -160,11 +160,11 @@ namespace Opal
 
 		static std::list<DirectoryEntry> ReadChildren(char *data, size_t size, size_t &offset) {
 			// Read the list size
-			auto listSize = ReadUInt16(data, size, offset);
+			auto listSize = ReadVarInt(data, size, offset);
 
 			auto result = std::list<DirectoryEntry>();
 			for (auto i = 0u; i < listSize; i++) {
-				auto [isDirectory, inSet] = ReadTwoBoolean(data, size, offset);
+				auto [isDirectory, inSet] = ReadFlags(data, size, offset);
 				auto entry = ReadString(data, size, offset);
 				auto children = std::list<DirectoryEntry>();
 				if (isDirectory) {
@@ -178,14 +178,21 @@ namespace Opal
 			return result;
 		}
 
-		static uint16_t ReadUInt16(char *data, size_t size, size_t &offset) {
-			uint16_t result = 0;
-			Read(data, size, offset, reinterpret_cast<char *>(&result), sizeof(uint16_t));
+		static size_t ReadVarInt(char *data, size_t size, size_t &offset) {
+			size_t result = 0;
+			for (auto i = 0; true; i++) {
+				uint8_t currentValue = 0;
+				Read(data, size, offset, reinterpret_cast<char *>(&currentValue), sizeof(uint8_t));
 
+				result = result | (currentValue & 0xEF) << (7 * i);
+				if ((currentValue & 0x80) == 0) {
+					break;
+				}
+			}
 			return result;
 		}
 
-		static std::pair<bool, bool> ReadTwoBoolean(char *data, size_t size, size_t &offset) {
+		static std::pair<bool, bool> ReadFlags(char *data, size_t size, size_t &offset) {
 			uint8_t result = 0;
 			Read(data, size, offset, reinterpret_cast<char *>(&result), sizeof(uint8_t));
 
@@ -196,7 +203,7 @@ namespace Opal
 		}
 
 		static std::string ReadString(char *data, size_t size, size_t &offset) {
-			auto stringLength = ReadUInt16(data, size, offset);
+			auto stringLength = ReadVarInt(data, size, offset);
 			auto result = std::string(stringLength, '\0');
 			Read(data, size, offset, result.data(), stringLength);
 
@@ -211,37 +218,40 @@ namespace Opal
 		}
 
 		static void WriteChildren(std::ostream &stream, const std::list<DirectoryEntry>& children) {
-			WriteValue(stream, CheckCast(children.size()));
+			WriteVarInt(stream, children.size());
 			for (auto& entry : children)
 			{
-				WriteValue(stream, entry.IsDirectory, entry.InSet);
-				WriteValue(stream, entry.Entry);
+				WriteFlags(stream, entry.IsDirectory, entry.InSet);
+				WriteString(stream, entry.Entry);
 				if (entry.IsDirectory) {
 					WriteChildren(stream, entry.Children);
 				}
 			}
 		}
 
-		static void WriteValue(std::ostream &stream, uint16_t value) {
-			stream.write(reinterpret_cast<char *>(&value), sizeof(uint16_t));
+		static void WriteVarInt(std::ostream &stream, size_t value) {
+			auto isFirst = true;
+			while (isFirst || value != 0) {
+				auto currentValue = static_cast<uint8_t>(value & 0xEF);
+				value = value >> 7;
+				if (value != 0) {
+					currentValue |= 0x80;
+				}
+
+				stream.write(reinterpret_cast<char *>(&currentValue), sizeof(uint8_t));
+				isFirst = false;
+			}
 		}
 
-		static void WriteValue(std::ostream &stream, bool value1, bool value2) {
-			uint16_t integerValue = value1 ? 0x01 : 0x00;
+		static void WriteFlags(std::ostream &stream, bool value1, bool value2) {
+			uint8_t integerValue = value1 ? 0x01 : 0x00;
 			integerValue |= value2 ? 0x02 : 0x00;
 			stream.write(reinterpret_cast<char *>(&integerValue), sizeof(uint8_t));
 		}
 
-		static void WriteValue(std::ostream &stream, std::string_view value) {
-			WriteValue(stream, CheckCast(value.size()));
+		static void WriteString(std::ostream &stream, std::string_view value) {
+			WriteVarInt(stream, value.size());
 			stream.write(value.data(), value.size());
-		}
-
-		static uint16_t CheckCast(size_t value) {
-			if (value > 0xFFFF) {
-				throw std::overflow_error("Cannot store value in 16 bit value");
-			}
-			return static_cast<uint16_t>(value);
 		}
 	};
 }
