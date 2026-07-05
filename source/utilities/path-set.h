@@ -160,7 +160,7 @@ namespace Opal
 
 		static std::list<DirectoryEntry> ReadChildren(char *data, size_t size, size_t &offset) {
 			// Read the list size
-			auto listSize = ReadUInt32(data, size, offset);
+			auto listSize = ReadUInt16(data, size, offset);
 
 			auto result = std::list<DirectoryEntry>();
 			for (auto i = 0u; i < listSize; i++) {
@@ -178,25 +178,25 @@ namespace Opal
 			return result;
 		}
 
-		static uint32_t ReadUInt32(char *data, size_t size, size_t &offset) {
-			uint32_t result = 0;
-			Read(data, size, offset, reinterpret_cast<char *>(&result), sizeof(uint32_t));
+		static uint16_t ReadUInt16(char *data, size_t size, size_t &offset) {
+			uint16_t result = 0;
+			Read(data, size, offset, reinterpret_cast<char *>(&result), sizeof(uint16_t));
 
 			return result;
 		}
 
 		static std::pair<bool, bool> ReadTwoBoolean(char *data, size_t size, size_t &offset) {
-			uint16_t result1 = 0;
-			Read(data, size, offset, reinterpret_cast<char *>(&result1), sizeof(uint16_t));
+			uint8_t result = 0;
+			Read(data, size, offset, reinterpret_cast<char *>(&result), sizeof(uint8_t));
 
-			uint16_t result2 = 0;
-			Read(data, size, offset, reinterpret_cast<char *>(&result2), sizeof(uint16_t));
+			auto result1 = (result & 0x01) != 0;
+			auto result2 = (result & 0x02) != 0;
 
-			return std::make_pair(result1 != 0, result2 != 0);
+			return std::make_pair(result1, result2);
 		}
 
 		static std::string ReadString(char *data, size_t size, size_t &offset) {
-			auto stringLength = ReadUInt32(data, size, offset);
+			auto stringLength = ReadUInt16(data, size, offset);
 			auto result = std::string(stringLength, '\0');
 			Read(data, size, offset, result.data(), stringLength);
 
@@ -211,7 +211,7 @@ namespace Opal
 		}
 
 		static void WriteChildren(std::ostream &stream, const std::list<DirectoryEntry>& children) {
-			WriteValue(stream, (uint32_t)children.size());
+			WriteValue(stream, CheckCast(children.size()));
 			for (auto& entry : children)
 			{
 				WriteValue(stream, entry.IsDirectory, entry.InSet);
@@ -222,21 +222,26 @@ namespace Opal
 			}
 		}
 
-		static void WriteValue(std::ostream &stream, uint32_t value) {
-			stream.write(reinterpret_cast<char *>(&value), sizeof(uint32_t));
+		static void WriteValue(std::ostream &stream, uint16_t value) {
+			stream.write(reinterpret_cast<char *>(&value), sizeof(uint16_t));
 		}
 
 		static void WriteValue(std::ostream &stream, bool value1, bool value2) {
-			uint16_t integer1Value = value1 ? 1u : 0u;
-			stream.write(reinterpret_cast<char *>(&integer1Value), sizeof(uint16_t));
-
-			uint16_t integer2Value = value2 ? 1u : 0u;
-			stream.write(reinterpret_cast<char *>(&integer2Value), sizeof(uint16_t));
+			uint16_t integerValue = value1 ? 0x01 : 0x00;
+			integerValue |= value2 ? 0x02 : 0x00;
+			stream.write(reinterpret_cast<char *>(&integerValue), sizeof(uint8_t));
 		}
 
 		static void WriteValue(std::ostream &stream, std::string_view value) {
-			WriteValue(stream, static_cast<uint32_t>(value.size()));
+			WriteValue(stream, CheckCast(value.size()));
 			stream.write(value.data(), value.size());
+		}
+
+		static uint16_t CheckCast(size_t value) {
+			if (value > 0xFFFF) {
+				throw std::overflow_error("Cannot store value in 16 bit value");
+			}
+			return static_cast<uint16_t>(value);
 		}
 	};
 }
