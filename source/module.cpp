@@ -4,10 +4,12 @@
 #include <array>
 #include <atomic>
 #include <chrono>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <list>
 #include <locale>
 #include <map>
 #include <mutex>
@@ -47,6 +49,7 @@ export import :SequenceMap;
 #define OPAL_IMPLEMENTATION
 
 #include "utilities/path.h"
+#include "utilities/path-set.h"
 #include "utilities/semantic-version.h"
 
 #include "io/mock-console-manager.h"
