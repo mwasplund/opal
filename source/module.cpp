@@ -4,10 +4,12 @@
 #include <array>
 #include <atomic>
 #include <chrono>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <list>
 #include <locale>
 #include <map>
 #include <mutex>
@@ -76,5 +78,6 @@ export import :WindowsProcess;
 
 // utilities
 export import :Path;
+export import :PathSet
 export import :SemanticVersion;
 export import :SequenceMap;
