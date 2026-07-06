@@ -17,10 +17,9 @@ import :SmartHandle;
 namespace Opal::System
 {
 	/// <summary>
-	/// A windows platform specific process executable using system
+	/// A windows platform specific process executable
 	/// </summary>
-	export class WindowsProcess : public IProcess
-	{
+	export class WindowsProcess : public IProcess {
 	private:
 		// Input
 		Path m_executable;
@@ -49,38 +48,35 @@ namespace Opal::System
 		/// Initializes a new instance of the <see cref='WindowsProcess'/> class.
 		/// </summary>
 		WindowsProcess(
-			const Path& executable,
+			const Path &executable,
 			std::vector<std::string> arguments,
-			const Path& workingDirectory,
-			bool interceptInputOutput) :
-			m_executable(executable),
-			m_arguments(std::move(arguments)),
-			m_workingDirectory(workingDirectory),
-			m_interceptInputOutput(interceptInputOutput),
-			m_threadHandle(),
-			m_processHandle(),
-			m_stdOutReadHandle(),
-			m_stdOutWriteHandle(),
-			m_stdErrReadHandle(),
-			m_stdErrWriteHandle(),
-			m_stdInReadHandle(),
-			m_stdInWriteHandle(),
-			m_isFinished(false),
-			m_stdOut(),
-			m_stdErr(),
-			m_exitCode(-1)
-		{
+			const Path &workingDirectory,
+			bool interceptInputOutput)
+			: m_executable(executable),
+			  m_arguments(std::move(arguments)),
+			  m_workingDirectory(workingDirectory),
+			  m_interceptInputOutput(interceptInputOutput),
+			  m_threadHandle(),
+			  m_processHandle(),
+			  m_stdOutReadHandle(),
+			  m_stdOutWriteHandle(),
+			  m_stdErrReadHandle(),
+			  m_stdErrWriteHandle(),
+			  m_stdInReadHandle(),
+			  m_stdInWriteHandle(),
+			  m_isFinished(false),
+			  m_stdOut(),
+			  m_stdErr(),
+			  m_exitCode(-1) {
 		}
 
 		/// <summary>
 		/// Execute a process for the provided
 		/// </summary>
-		void Start() override final
-		{
+		void Start() override final {
 			std::stringstream argumentsValue;
 			argumentsValue << "\"" << m_executable.ToAlternateString() << "\"";
-			for (auto& argument : m_arguments)
-			{
+			for (auto &argument : m_arguments) {
 				// TODO: Handle quotes better, for now do not add wrapper when double quotes exist
 				if (argument.find('"') != std::string::npos)
 					argumentsValue << " " << argument;
@@ -97,19 +93,19 @@ namespace Opal::System
 			if (m_interceptInputOutput)
 			{
 				// Setup the input/output streams
-				// TODO: We need to read from the buffer to ensure it doesn't deadlock on the wait forever
-				int pipeBufferSize = 5 * 1024 * 1024;
+				int pipeBufferSize = 64 * 1024;
 
 				// Set the bInheritHandle flag so pipe handles are inherited.
-				SECURITY_ATTRIBUTES securityAttributes; 
-				securityAttributes.nLength = sizeof(SECURITY_ATTRIBUTES); 
-				securityAttributes.bInheritHandle = true; 
-				securityAttributes.lpSecurityDescriptor = nullptr; 
+				SECURITY_ATTRIBUTES securityAttributes;
+				securityAttributes.nLength = sizeof(SECURITY_ATTRIBUTES);
+				securityAttributes.bInheritHandle = true;
+				securityAttributes.lpSecurityDescriptor = nullptr;
 
 				// Create a pipe for the child process's STDOUT.
 				HANDLE childStdOutRead;
 				HANDLE childStdOutWrite;
-				if (!CreatePipe(&childStdOutRead, &childStdOutWrite, &securityAttributes, pipeBufferSize))
+				if (!CreatePipe(
+						&childStdOutRead, &childStdOutWrite, &securityAttributes, pipeBufferSize))
 					throw std::runtime_error("Execute CreatePipe Failed");
 				m_stdOutReadHandle = SmartHandle(childStdOutRead);
 				m_stdOutWriteHandle = SmartHandle(childStdOutWrite);
@@ -121,7 +117,8 @@ namespace Opal::System
 				// Create a pipe for the child process's STDERR.
 				HANDLE childStdErrRead;
 				HANDLE childStdErrWrite;
-				if (!CreatePipe(&childStdErrRead, &childStdErrWrite, &securityAttributes, pipeBufferSize))
+				if (!CreatePipe(
+						&childStdErrRead, &childStdErrWrite, &securityAttributes, pipeBufferSize))
 					throw std::runtime_error("Execute CreatePipe Failed");
 				m_stdErrReadHandle = SmartHandle(childStdErrRead);
 				m_stdErrWriteHandle = SmartHandle(childStdErrWrite);
@@ -152,14 +149,14 @@ namespace Opal::System
 			// Setup the process creation parameters
 			LPSECURITY_ATTRIBUTES processAttributes = nullptr;
 			LPSECURITY_ATTRIBUTES threadAttributes = nullptr;
-			bool inheritHandles = false;
+			bool inheritHandles = true;
 			DWORD creationFlags = 0;
 			void* environment = nullptr;
 
 			PROCESS_INFORMATION processInfo = {};
 			ZeroMemory(&processInfo, sizeof(PROCESS_INFORMATION));
 
-			// Start the process
+			// Create the requested process
 			if (!CreateProcessA(
 				m_executable.ToString().c_str(),
 				argumentsString.data(),
@@ -170,8 +167,7 @@ namespace Opal::System
 				environment,
 				m_workingDirectory.IsEmpty() ? nullptr : m_workingDirectory.ToString().c_str(),
 				&startupInfo,
-				&processInfo))
-			{
+				&processInfo)) {
 				auto error = GetLastError();
 				throw std::runtime_error("Execute CreateProcessA Failed: " + std::to_string(error));
 			}
@@ -184,12 +180,10 @@ namespace Opal::System
 		/// <summary>
 		/// Wait for the process to exit
 		/// </summary>
-		void WaitForExit() override final
-		{
+		void WaitForExit() override final {
 			// Wait until child process exits.
 			auto waitResult = WaitForSingleObject(m_processHandle.Get(), INFINITE);
-			switch (waitResult)
-			{
+			switch (waitResult) {
 				case WAIT_OBJECT_0:
 					// All good
 					break;
@@ -200,7 +194,8 @@ namespace Opal::System
 					throw std::runtime_error("Execute WaitForSingleObject Timeout");
 					break;
 				case WAIT_FAILED:
-					throw std::runtime_error("Execute WaitForSingleObject Failed: " + std::to_string(GetLastError()));
+					throw std::runtime_error(
+						std::format("Execute WaitForSingleObject Failed: {}", GetLastError()));
 					break;
 				default:
 					throw std::runtime_error("Execute WaitForSingleObject Failed Unknown");
@@ -208,10 +203,10 @@ namespace Opal::System
 
 			// Get the exit code
 			DWORD exitCode;
-			if (!GetExitCodeProcess(m_processHandle.Get(), &exitCode))
-			{
+			if (!GetExitCodeProcess(m_processHandle.Get(), &exitCode)) {
 				auto error = GetLastError();
-				throw std::runtime_error("Execute GetExitCodeProcess Failed: " + std::to_string(error));
+				throw std::runtime_error(
+					std::format("Execute GetExitCodeProcess Failed: {}", error));
 			}
 			m_exitCode = exitCode;
 
@@ -220,35 +215,8 @@ namespace Opal::System
 				// Close the child write handle to ensure we stop reading
 				m_stdOutWriteHandle.Close();
 				m_stdErrWriteHandle.Close();
-				
-				// Read all and write to stdout
-				// TODO: May want to switch over to a background thread with peak to read in order
-				DWORD dwRead;
-				const int BufferSize = 256;
-				char buffer[BufferSize + 1];
 
-				// Read on output
-				while (true)
-				{
-					if(!ReadFile(m_stdOutReadHandle.Get(), buffer, BufferSize, &dwRead, nullptr))
-						break;
-					if (dwRead == 0)
-						break;
-
-					m_stdOut << std::string_view(buffer, dwRead);
-				}
-
-				// Read all errors
-				while (true)
-				{
-					if(!ReadFile(m_stdErrReadHandle.Get(), buffer, BufferSize, &dwRead, nullptr))
-						break;
-					if (dwRead == 0)
-						break;
-
-					// Make the string null terminated
-					m_stdErr << std::string_view(buffer, dwRead);
-				}
+				ReadAllAvailableStandardOutput();
 			}
 
 			m_isFinished = true;
@@ -257,8 +225,7 @@ namespace Opal::System
 		/// <summary>
 		/// Get the exit code
 		/// </summary>
-		int GetExitCode() override final
-		{
+		int GetExitCode() override final {
 			if (!m_isFinished)
 				throw std::runtime_error("Process has not finished.");
 			return m_exitCode;
@@ -267,8 +234,7 @@ namespace Opal::System
 		/// <summary>
 		/// Get the standard output
 		/// </summary>
-		std::string GetStandardOutput() override final
-		{
+		std::string GetStandardOutput() override final {
 			if (!m_isFinished)
 				throw std::runtime_error("Process has not finished.");
 			return m_stdOut.str();
@@ -277,11 +243,39 @@ namespace Opal::System
 		/// <summary>
 		/// Get the standard error output
 		/// </summary>
-		std::string GetStandardError() override final
-		{
+		std::string GetStandardError() override final {
 			if (!m_isFinished)
 				throw std::runtime_error("Process has not finished.");
 			return m_stdErr.str();
+		}
+
+	private:
+		void ReadAllAvailableStandardOutput() {
+			// Read all and write to stdout
+			DWORD dwRead;
+			const int BufferSize = 1024;
+			char buffer[BufferSize + 1];
+
+			// Read on output
+			while (true) {
+				if (!ReadFile(m_stdOutReadHandle.Get(), buffer, BufferSize, &dwRead, nullptr))
+					break;
+				if (dwRead == 0)
+					break;
+
+				m_stdOut << std::string_view(buffer, dwRead);
+			}
+
+			// Read all errors
+			while (true) {
+				if (!ReadFile(m_stdErrReadHandle.Get(), buffer, BufferSize, &dwRead, nullptr))
+					break;
+				if (dwRead == 0)
+					break;
+
+				// Make the string null terminated
+				m_stdErr << std::string_view(buffer, dwRead);
+			}
 		}
 	};
 }
