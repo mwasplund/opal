@@ -184,7 +184,7 @@ namespace Opal
 				uint8_t currentValue = 0;
 				Read(data, size, offset, reinterpret_cast<char *>(&currentValue), sizeof(uint8_t));
 
-				result = result | (currentValue & 0xEF) << (7 * i);
+				result = result | (currentValue & 0x7F) << (7 * i);
 				if ((currentValue & 0x80) == 0) {
 					break;
 				}
@@ -232,7 +232,7 @@ namespace Opal
 		static void WriteVarInt(std::ostream &stream, size_t value) {
 			auto isFirst = true;
 			while (isFirst || value != 0) {
-				auto currentValue = static_cast<uint8_t>(value & 0xEF);
+				auto currentValue = static_cast<uint8_t>(value & 0x7F);
 				value = value >> 7;
 				if (value != 0) {
 					currentValue |= 0x80;
