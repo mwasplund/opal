@@ -14,73 +14,70 @@
 #include <map>
 #include <mutex>
 #include <optional>
-#include <queue>
-#include <sstream>
+#include <stdexcept>
 #include <string>
-
-#if defined(_WIN32)
-
-#include <Windows.h>
-#include <psapi.h>
-#include <shlobj.h>
-
-#undef min
-#undef max
-#undef CreateDirectory
-#undef CreateProcess
-#undef GetCurrentTime
-#undef GetCurrentDirectory
-
-#elif defined(__linux__)
-
-#include <spawn.h>
-#include <sys/wait.h>
-
-#include "utilities/environment.h"
-
-#else
-#error Uknown Platform
-#endif
 
 export module Opal;
 
+// io
+export import :IConsoleInputStream;
+export import :IConsoleManager;
+export import :MockConsoleInputStream;
+export import :MockConsoleManager;
+export import :ScopedConsoleManagerRegister;
+export import :SystemConsoleInputStream;
+export import :SystemConsoleManager;
+
+// logger
+export import :ConsoleTraceListener;
+export import :EventTypeFilter;
+export import :FileTraceListener;
+export import :Log;
+export import :ScopedTraceListenerRegister;
+export import :TestTraceListener;
+export import :TraceListener;
+
+// memory
+export import :IReferenceCounted;
+export import :ReferenceCounted;
+export import :Reference;
+
+// system
+export import :IFileSystem;
+export import :IFile;
+export import :IInputFile;
+export import :ILibraryManager;
+export import :ILibrary;
+export import :IOutputFile;
+export import :IProcessManager;
+export import :IProcess;
+export import :ISystem;
+export import :LinuxProcessManager;
+export import :LinuxProcess;
+export import :MockDirectory;
+export import :MockFileSystem;
+export import :MockFile;
+export import :MockLibraryManager;
+export import :MockLibrary;
+export import :MockProcessManager;
+export import :MockProcess;
+export import :MockSystem;
+export import :ScopedFileSystemRegister;
+export import :ScopedLibraryManagerRegister;
+export import :ScopedProcessManagerRegister;
+export import :ScopedSystemRegister;
+export import :SmartHandle;
+export import :STLFileSystem;
+export import :STLInputFile;
+export import :STLOutputFile;
+export import :STLSystem;
+export import :WindowsDynamicLibraryManager;
+export import :WindowsDynamicLibrary;
+export import :WindowsProcessManager;
+export import :WindowsProcess;
+
+// utilities
+export import :Path;
+export import :PathSet
+export import :SemanticVersion;
 export import :SequenceMap;
-
-#define OPAL_IMPLEMENTATION
-
-#include "utilities/path.h"
-#include "utilities/path-set.h"
-#include "utilities/semantic-version.h"
-
-#include "io/mock-console-manager.h"
-#include "io/scoped-console-manager-register.h"
-#include "io/system-console-manager.h"
-
-#include "memory/i-reference-counted.h"
-#include "memory/reference-counted.h"
-#include "memory/reference.h"
-
-#include "system/mock-file-system.h"
-#include "system/mock-library-manager.h"
-#include "system/mock-process-manager.h"
-#include "system/mock-system.h"
-#include "system/scoped-file-system-register.h"
-#include "system/scoped-library-manager-register.h"
-#include "system/scoped-process-manager-register.h"
-#include "system/scoped-system-register.h"
-#include "system/stl-file-system.h"
-#include "system/stl-system.h"
-
-#include "logger/console-trace-listener.h"
-#include "logger/file-trace-listener.h"
-#include "logger/log.h"
-#include "logger/scoped-trace-listener-register.h"
-#include "logger/test-trace-listener.h"
-
-#if defined(_WIN32)
-#include "system/smart-handle.h"
-#include "system/windows-dynamic-library-manager.h"
-#include "system/windows-process-manager.h"
-#elif defined(__linux__)
-#include "system/linux-process-manager.h"
-#endif
