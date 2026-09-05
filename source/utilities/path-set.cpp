@@ -1,7 +1,17 @@
-﻿// <copyright file="path-set.h" company="Soup">
+﻿// <copyright file="path-set.cpp" company="Soup">
 // Copyright (c) Soup. All rights reserved.
 // </copyright>
-#pragma once
+
+module;
+#include <algorithm>
+#include <cstdint>
+#include <cstring>
+#include <list>
+#include <stdexcept>
+#include <string>
+#include <vector>
+export module Opal:PathSet;
+import :Path;
 
 namespace Opal
 {
@@ -213,7 +223,7 @@ namespace Opal
 		static void Read(const char *data, size_t size, size_t &offset, char *buffer, size_t count) {
 			if (offset + count > size)
 				throw std::runtime_error("Tried to read past end of data");
-			memcpy(buffer, data + offset, count);
+			std::memcpy(buffer, data + offset, count);
 			offset += count;
 		}
 

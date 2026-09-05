@@ -3,6 +3,7 @@
 // </copyright>
 
 module;
+#if defined(_WIN32)
 #include <array>
 #include <memory>
 #include <stdexcept>
@@ -10,6 +11,7 @@ module;
 #include <vector>
 #include <windows.h>
 #undef CreateProcess
+#endif
 export module Opal:WindowsProcessManager;
 import :IProcess;
 import :IProcessManager;

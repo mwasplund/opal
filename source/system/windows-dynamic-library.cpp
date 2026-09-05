@@ -3,8 +3,10 @@
 // </copyright>
 
 module;
+#if defined(_WIN32)
 #include <string>
 #include <windows.h>
+#endif
 export module Opal:WindowsDynamicLibrary;
 import :ILibrary;
 

@@ -3,7 +3,9 @@
 // </copyright>
 
 module;
+#if defined(_WIN32)
 #include <windows.h>
+#endif
 export module Opal:SmartHandle;
 
 #if defined(_WIN32)

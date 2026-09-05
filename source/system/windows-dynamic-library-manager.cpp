@@ -3,9 +3,11 @@
 // </copyright>
 
 module;
+#if defined(_WIN32)
 #include <memory>
 #include <string>
 #include <windows.h>
+#endif
 export module Opal:WindowsDynamicLibraryManager;
 import :ILibraryManager;
 import :WindowsDynamicLibrary;

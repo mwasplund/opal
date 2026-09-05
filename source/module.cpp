@@ -78,6 +78,6 @@ export import :WindowsProcess;
 
 // utilities
 export import :Path;
-export import :PathSet
+export import :PathSet;
 export import :SemanticVersion;
 export import :SequenceMap;

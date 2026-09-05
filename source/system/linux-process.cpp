@@ -7,8 +7,17 @@ module;
 #include <spawn.h>
 #include <sys/wait.h>
 #include "../utilities/environment.h"
+#include <iostream>
+#include <stdexcept>
+#include <string>
+#include <vector>
 #endif
+export module Opal:LinuxProcess;
+import :IProcess;
+import :Log;
+import :Path;
 
+#if defined(__linux__)
 namespace Opal::System {
 	/// <summary>
 	/// A Linux platform specific process executable using system

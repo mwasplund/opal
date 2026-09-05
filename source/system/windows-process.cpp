@@ -3,11 +3,13 @@
 // </copyright>
 
 module;
+#if defined(_WIN32)
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
 #include <windows.h>
+#endif
 export module Opal:WindowsProcess;
 import :IProcess;
 import :Path;
