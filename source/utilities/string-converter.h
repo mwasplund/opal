@@ -14,7 +14,40 @@ namespace Opal
 		static std::string ToUTF8(std::wstring_view value)
 		{
 			#ifdef _WIN32
-			WideCharToMultiByte();
+				 // Calculate the required buffer size
+				int requiredSize = WideCharToMultiByte(
+					CP_UTF8,
+					0,
+					value.data(),
+					static_cast<int>(value.size()),
+					nullptr,
+					0,
+					nullptr,
+					nullptr);
+
+				if (requiredSize <= 0) {
+					throw std::runtime_error("WideCharToMultiByte failed during sizing pass.");
+				}
+
+				// Initialize the result buffer
+				std::string result(requiredSize, '\0');
+
+				// Perform the actual conversion
+				auto convertResult = WideCharToMultiByte(
+					CP_UTF8, 
+					0, 
+					value.data(),
+					static_cast<int>(value.size()), 
+					&result[0],
+					requiredSize,
+					nullptr, 
+					nullptr);
+
+				if (convertResult <= 0) {
+					throw std::runtime_error("WideCharToMultiByte failed during conversion pass.");
+				}
+
+				return result;
 			#elif __linux__
 				iconv_t cd = iconv_open("UTF-8", "WCHAR_T");
 				if (cd == (iconv_t)-1) {
@@ -51,7 +84,36 @@ namespace Opal
 		static std::wstring ToUTF16(std::string_view value)
 		{
 			#ifdef _WIN32
-			MultiByteToWideChar();
+				 // Calculate the required buffer size
+				int requiredSize = MultiByteToWideChar(
+					CP_UTF8,
+					0,
+					value.data(),
+					static_cast<int>(value.size()),
+					nullptr,
+					0);
+
+				if (requiredSize <= 0) {
+					throw std::runtime_error("MultiByteToWideChar failed during sizing pass.");
+				}
+
+				// Initialize the result buffer
+				std::wstring result(requiredSize, L'\0');
+
+				// Perform the actual conversion
+				int convertResult = MultiByteToWideChar(
+					CP_UTF8,
+					0,
+					value.data(),
+					static_cast<int>(value.size()),
+					&result[0],
+					requiredSize);
+
+				if (convertResult <= 0) {
+					throw std::runtime_error("MultiByteToWideChar failed during conversion pass.");
+				}
+
+				return result;
 			#elif __linux__
 				iconv_t cd = iconv_open("WCHAR_T", "UTF-8");
 				if (cd == (iconv_t)-1) return {};
