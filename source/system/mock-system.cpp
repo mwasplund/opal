@@ -1,0 +1,54 @@
+﻿// <copyright file="mock-system.cpp" company="Soup">
+// Copyright (c) Soup. All rights reserved.
+// </copyright>
+
+module;
+#include <chrono>
+#include <filesystem>
+#include <vector>
+#include <string>
+export module Opal:MockSystem;
+import :ISystem;
+
+namespace Opal::System
+{
+	/// <summary>
+	/// The mock system
+	/// TODO: Move into test project
+	/// </summary>
+	export class MockSystem : public ISystem
+	{
+	public:
+		/// <summary>
+		/// Initializes a new instance of the <see cref='MockSystem'/> class.
+		/// </summary>
+		MockSystem() :
+			_requests()
+		{
+		}
+
+		/// <summary>
+		/// Get the load requests
+		/// </summary>
+		const std::vector<std::string>& GetRequests() const
+		{
+			return _requests;
+		}
+
+		/// <summary>
+		/// Get current system time
+		/// </summary>
+		std::filesystem::file_time_type GetCurrentTime() override final
+		{
+			std::stringstream message;
+			message << "GetCurrentTime";
+			_requests.push_back(message.str());
+
+			return std::chrono::clock_cast<std::chrono::file_clock>(
+				std::chrono::time_point<std::chrono::system_clock>());
+		}
+
+	private:
+		std::vector<std::string> _requests;
+	};
+}
