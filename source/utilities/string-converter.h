@@ -13,6 +13,9 @@ namespace Opal
 	public:
 		static std::string ToUTF8(std::wstring_view value)
 		{
+			if (value.empty())
+				return std::string();
+
 			#ifdef _WIN32
 				 // Calculate the required buffer size
 				int requiredSize = WideCharToMultiByte(
