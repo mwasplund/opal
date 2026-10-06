@@ -33,6 +33,7 @@
 
 #elif defined(__linux__)
 
+#include <iconv.h>
 #include <spawn.h>
 #include <sys/wait.h>
 
@@ -51,6 +52,7 @@ export import :SequenceMap;
 #include "utilities/path.h"
 #include "utilities/path-set.h"
 #include "utilities/semantic-version.h"
+#include "utilities/string-converter.h"
 
 #include "io/mock-console-manager.h"
 #include "io/scoped-console-manager-register.h"
